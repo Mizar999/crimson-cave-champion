@@ -1,3 +1,3 @@
 document.body.onload = () => {
-    alert('TODO');
+    alert('Load game');
 }
