@@ -1,3 +1,5 @@
+import { Game } from "./game";
+
 document.body.onload = () => {
-    alert('Load game');
+    var game = new Game();
 }
