@@ -23,14 +23,14 @@ export class Game {
     }
 
     private initialize(): void {
-        let maxMessages = 5;
+        let maxMessages = 15;
         this.messageLog = new MessageLog(document.getElementById("messages"), maxMessages);
         this.messageLog.addMessages(...Array(maxMessages).fill("&nbsp;"));
 
         ServiceLocator.provideInputUtility(new InputUtility());
 
         this.scheduler = new Scheduler.Simple();
-        this.scheduler.add(new Player(new Point(0, 0)), true);
+        this.scheduler.add(Player.createPlayer(), true);
     }
 
     private async mainLoop(): Promise<void> {
