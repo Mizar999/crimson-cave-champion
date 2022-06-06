@@ -6,7 +6,7 @@ import { Dice, DiceResult, DiceValue } from "../util/dice";
 import { Command } from "../command/command";
 import { DebugLogCommand } from "../command/debug-log-command";
 import { Game } from "../game";
-import { Combat } from "../system/combat";
+import { SystemManager } from "../system/system-manager";
 import { PlayerStats } from "./player-stats";
 
 export class Player extends Actor {
@@ -17,34 +17,6 @@ export class Player extends Actor {
         super(ActorType.Player, new Visual("@", "white"));
         this.position = position;
         this.stats = new PlayerStats();
-    }
-
-    savingThrow(source: Actor, savingThrowtype: SavingThrowType): boolean {
-        let diceResult = Dice.roll(2, 8).result;
-        if (diceResult <= 2) {
-            return false;
-        } else if (diceResult >= 16) {
-            return true;
-        }
-
-        let difficulty = 9;
-        switch(source.type) {
-            case ActorType.Player:
-                difficulty += (<Player>source).stats.level;
-            // TODO Creature, Trap
-        }
-
-        let modifier = this.stats.level;
-        switch(savingThrowtype) {
-            case SavingThrowType.Resist:
-                modifier += this.stats.constitution.getModifier();
-            case SavingThrowType.Dodge:
-                modifier += this.stats.dexterity.getModifier();
-            case SavingThrowType.Dispel:
-                modifier += this.stats.wisdom.getModifier();
-        }
-
-        return (diceResult + modifier) >= difficulty;
     }
 
     static createPlayer(): Player {
@@ -101,7 +73,7 @@ export class Player extends Actor {
             message += ' miss';
         } else {
             let attacks: DiceValue[] = [];
-            message += `; damage = ${Combat.getDamage(new DiceValue(1, 2)) + Combat.getDamage(this.stats.frayDie)}`;
+            message += `; damage = ${SystemManager.getDamage(new DiceValue(1, 2)) + SystemManager.getDamage(this.stats.frayDie)}`;
         }
 
         this.command = new DebugLogCommand(message);
