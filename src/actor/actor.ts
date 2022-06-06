@@ -7,7 +7,14 @@ import { Game } from "../game";
 
 export const enum ActorType {
     Player,
-    Creature
+    Creature,
+    Trap
+}
+
+export const enum SavingThrowType {
+    Resist,
+    Dodge,
+    Dispel
 }
 
 export abstract class Actor extends Entity {

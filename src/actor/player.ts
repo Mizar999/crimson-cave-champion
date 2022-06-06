@@ -1,4 +1,4 @@
-import { Actor, ActorType } from "./actor";
+import { Actor, ActorType, SavingThrowType } from "./actor";
 import { Point } from "../util/point";
 import { Visual } from "../ui/visual";
 import { ServiceLocator } from "../util/service-locator";
@@ -6,6 +6,7 @@ import { Dice, DiceResult, DiceValue } from "../util/dice";
 import { Command } from "../command/command";
 import { DebugLogCommand } from "../command/debug-log-command";
 import { Game } from "../game";
+import { Combat } from "../system/combat";
 import { PlayerStats } from "./player-stats";
 
 export class Player extends Actor {
@@ -16,6 +17,34 @@ export class Player extends Actor {
         super(ActorType.Player, new Visual("@", "white"));
         this.position = position;
         this.stats = new PlayerStats();
+    }
+
+    savingThrow(source: Actor, savingThrowtype: SavingThrowType): boolean {
+        let diceResult = Dice.roll(2, 8).result;
+        if (diceResult <= 2) {
+            return false;
+        } else if (diceResult >= 16) {
+            return true;
+        }
+
+        let difficulty = 9;
+        switch(source.type) {
+            case ActorType.Player:
+                difficulty += (<Player>source).stats.level;
+            // TODO Creature, Trap
+        }
+
+        let modifier = this.stats.level;
+        switch(savingThrowtype) {
+            case SavingThrowType.Resist:
+                modifier += this.stats.constitution.getModifier();
+            case SavingThrowType.Dodge:
+                modifier += this.stats.dexterity.getModifier();
+            case SavingThrowType.Dispel:
+                modifier += this.stats.wisdom.getModifier();
+        }
+
+        return (diceResult + modifier) >= difficulty;
     }
 
     static createPlayer(): Player {
@@ -46,22 +75,6 @@ export class Player extends Actor {
         return player;
     }
 
-    static getDamage(attacks: DiceValue[]): number {
-        let damage: number = 0;
-        attacks.forEach(attack => {
-            attack.roll().dice.forEach(value => {
-                if (value >= 10) {
-                    damage += 4;
-                } else if (value >= 6) {
-                    damage += 2;
-                } else if (value >= 2) {
-                    damage += 1;
-                }
-            });
-        });
-        return damage;
-    }
-
     private static resultWithoutLowest(result: DiceResult): number {
         let temp: number[] = result.dice.slice();
         temp.splice(temp.indexOf(Math.min.apply(null, temp)), 1);
@@ -88,9 +101,7 @@ export class Player extends Actor {
             message += ' miss';
         } else {
             let attacks: DiceValue[] = [];
-            attacks.push(new DiceValue(1, 2));
-            attacks.push(this.stats.frayDie);
-            message += `; damage = ${Player.getDamage(attacks)}`;
+            message += `; damage = ${Combat.getDamage(new DiceValue(1, 2)) + Combat.getDamage(this.stats.frayDie)}`;
         }
 
         this.command = new DebugLogCommand(message);
