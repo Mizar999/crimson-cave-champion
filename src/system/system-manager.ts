@@ -31,11 +31,11 @@ export class SystemManager {
             let nextResult = { hit: false, diceResult: 0, attackRoll: 0, damage: 0 };
             let hit = false;
 
-            if (attack.isFrayDie && attacker.type === ActorType.Player) {
-                hit = (<Player>attacker).stats.level > targetLevel;
-            }
-
-            if (!hit) {
+            if (attack.isFrayDie) {
+                if (attacker.type === ActorType.Player && targetLevel) {
+                    hit = (<Player>attacker).stats.level >= targetLevel;
+                }
+            } else {
                 let diceResult = Dice.roll(1, 20).result;
                 nextResult.diceResult = diceResult;
 
