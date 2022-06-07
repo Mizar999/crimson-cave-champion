@@ -8,6 +8,7 @@ import { DebugLogCommand } from "../command/debug-log-command";
 import { Game } from "../game";
 import { SystemManager } from "../system/system-manager";
 import { PlayerStats } from "./player-stats";
+import { Attack } from "../system/attack";
 
 export class Player extends Actor {
     stats: PlayerStats;
@@ -26,7 +27,7 @@ export class Player extends Actor {
         for (let i = 0; i < 4; ++i) {
             attributes.push(this.resultWithoutLowest(Dice.roll(4, 6)));
         }
-        
+
         if (Math.max.apply(null, attributes) < 16) {
             attributes[attributes.indexOf(Math.min.apply(null, attributes))] = 16;
         }
@@ -38,7 +39,7 @@ export class Player extends Actor {
 
         player.stats.maxHitPoints = 8 + player.stats.constitution.getModifier();
         player.stats.hitPoints = player.stats.maxHitPoints;
-        player.stats.armorClass = Math.max(9, 9 + player.stats.dexterity.getModifier());
+        player.stats.armorClass = Math.min(9, 9 - player.stats.dexterity.getModifier());
         player.stats.attackBonus = 1;
 
         player.stats.frayDie.numberOf = 1;
@@ -65,17 +66,20 @@ export class Player extends Actor {
     }
 
     private handleInput(event: KeyboardEvent): boolean {
-        let enemyAC: number = 9;
-        let diceResult = Dice.roll(1, 20).result;
-        let attackResult = diceResult + this.stats.attackBonus + this.stats.strength.getModifier() + enemyAC;
-        let message = `${this.describe()} attacks [${diceResult} + ${this.stats.attackBonus} + ${this.stats.strength.getModifier()} + ${enemyAC}] = ${attackResult}`;
-        if (diceResult == 1 || (diceResult != 20 && attackResult < 20)) {
-            message += ' miss';
-        } else {
-            let attacks: DiceValue[] = [];
-            message += `; damage = ${SystemManager.getDamage(new DiceValue(1, 2)) + SystemManager.getDamage(this.stats.frayDie)}`;
-        }
+        let attacks: Attack[] = [];
 
+        let attack = new Attack();
+        attack.damage.numberOf = 1;
+        attack.damage.sides = 10;
+        attack.attackBonus = this.stats.attackBonus + this.stats.strength.getModifier();
+        attacks.push(attack);
+
+        attack = new Attack();
+        attack.damage = this.stats.frayDie;
+        attack.hitsAlways = true;
+        attacks.push(attack);
+        
+        let message = SystemManager.attack(this, this, attacks);
         this.command = new DebugLogCommand(message);
         return this.command !== undefined;
     }
