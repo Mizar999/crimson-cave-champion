@@ -7,12 +7,17 @@ import { Attack } from "./attack";
 export class SystemManager {
     static attack(attacker: Actor, target: Actor, attacks: Attack[]): string {
         let life: number;
+        let targetLevel: number;
         switch (target.type) {
             case ActorType.Player:
-                life = (<Player>target).stats.hitPoints;
+                let stats = (<Player>target).stats;
+                life = stats.hitPoints;
+                targetLevel = stats.level;
                 break;
             case ActorType.Creature:
-                life = (<Creature>target).hitDice;
+                let creature = <Creature>target;
+                life = creature.hitDice;
+                targetLevel = creature.breed.maxHitDice;
                 break;
         }
 
@@ -24,7 +29,12 @@ export class SystemManager {
 
         attacks.forEach(attack => {
             let nextResult = { hit: false, diceResult: 0, attackRoll: 0, damage: 0 };
-            let hit = attack.hitsAlways;
+            let hit = false;
+
+            if (attack.isFrayDie && attacker.type === ActorType.Player) {
+                hit = (<Player>attacker).stats.level > targetLevel;
+            }
+
             if (!hit) {
                 let diceResult = Dice.roll(1, 20).result;
                 nextResult.diceResult = diceResult;
@@ -47,7 +57,7 @@ export class SystemManager {
             }
 
             if (hit) {
-                let damage = this.getDamage(attack.damage) + attack.damageBonus; // TODO Check
+                let damage = this.getDamage(attack.damage);
                 nextResult.hit = true;
                 nextResult.damage = damage;
 
@@ -100,8 +110,22 @@ export class SystemManager {
     }
 
     static getDamage(attack: DiceValue): number {
-        let damage: number = 0;
-        attack.roll().dice.forEach(value => {
+        let damage = 0;
+        let modifier = attack.modifier;
+        let rolls = attack.roll().dice.slice().sort((a, b) => b - a);
+        let length = rolls.length;
+
+        let debug = [];
+        rolls.forEach((value, index) => {
+            // Modifier is only applied to a single die
+            if (modifier > 0) {
+                if ((value < 10 && value + modifier >= 10) || (value < 6 && value + modifier >= 6) || (value < 2 && value + modifier >= 2) || (index === length - 1)) {
+                    value += modifier;
+                    modifier = 0;
+                }
+            }
+            debug.push(value);
+
             if (value >= 10) {
                 damage += 4;
             } else if (value >= 6) {
@@ -110,6 +134,7 @@ export class SystemManager {
                 damage += 1;
             }
         });
+        console.log(rolls, debug);
         return damage;
     }
 

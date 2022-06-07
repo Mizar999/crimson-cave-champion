@@ -73,14 +73,15 @@ export class Player extends Actor {
         let attacks: Attack[] = [];
 
         let attack = new Attack();
-        attack.damage.numberOf = 1;
+        attack.damage.numberOf = 2;
         attack.damage.sides = 10;
+        attack.damage.modifier = 2;
         attack.attackBonus = this.stats.attackBonus + this.stats.strength.getModifier();
         attacks.push(attack);
 
         attack = new Attack();
         attack.damage = this.stats.frayDie;
-        attack.hitsAlways = true;
+        attack.isFrayDie = true;
         attacks.push(attack);
         
         let message = SystemManager.attack(this, this, attacks);
