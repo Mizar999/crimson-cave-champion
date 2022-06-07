@@ -8,6 +8,6 @@ export class DebugLogCommand extends Command {
 
     execute(game: Game): Promise<CommandResult> {
         game.getMessageLog().addMessages(this.message);
-        return this.success();
+        return this.finished();
     }
 }

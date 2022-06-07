@@ -4,10 +4,12 @@ import {Breed} from "./breed";
 
 export class Creature extends Actor {
     hitDice: number;
+    actions: number;
 
     constructor(position: Point, public breed: Breed) {
         super(ActorType.Creature, breed.visual);
         this.position = position;
         this.hitDice = breed.maxHitDice;
+        this.actions = breed.baseActions;
     }
 }

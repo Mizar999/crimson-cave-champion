@@ -7,7 +7,7 @@ import { InputUtility } from "./util/input-utility";
 import { Player } from "./actor/player";
 import { Point } from "./util/point";
 import { Actor } from "./actor/actor";
-import { Command, CommandResult, CommandResultType } from "./command/command";
+import { Command, CommandResult } from "./command/command";
 
 export class Game {
     private messageLog: MessageLog;
@@ -39,7 +39,7 @@ export class Game {
         let commandResult: CommandResult;
 
         while (true) {
-            if (!commandResult || commandResult.result != CommandResultType.Wait) {
+            if (!commandResult || commandResult.finished) {
                 if (actor) {
                     actor.onAfterTurn(this);
                 }
@@ -54,7 +54,7 @@ export class Game {
 
             command = await actor.takeTurn(this);
             commandResult = await command.execute(this);
-            if (commandResult.result != CommandResultType.Success && commandResult.message) {
+            if (commandResult.message) {
                 this.messageLog.addMessages(commandResult.message);
             }
         }

@@ -2,19 +2,15 @@ import { Game } from "../game";
 
 export class Command {
     execute(game: Game): Promise<CommandResult> {
-        return this.success();
+        return this.finished();
     }
 
-    success(): Promise<CommandResult> {
-        return Promise.resolve(new CommandResult(CommandResultType.Success));
+    finished(reason?: string): Promise<CommandResult> {
+        return Promise.resolve(new CommandResult(true, reason));
     }
 
-    fail(reason?: string): Promise<CommandResult> {
-        return Promise.resolve(new CommandResult(CommandResultType.Failure, reason));
-    }
-
-    wait(reason?: string): Promise<CommandResult> {
-        return Promise.resolve(new CommandResult(CommandResultType.Wait, reason));
+    again(reason?: string): Promise<CommandResult> {
+        return Promise.resolve(new CommandResult(false, reason));
     }
 
     alternate(game: Game, command: Command): Promise<CommandResult> {
@@ -22,12 +18,6 @@ export class Command {
     }
 }
 
-export const enum CommandResultType {
-    Success,
-    Failure,
-    Wait
-}
-
 export class CommandResult {
-    constructor(public readonly result: CommandResultType, public readonly message?: string) { }
+    constructor(public readonly finished: boolean, public readonly message?: string) { }
 }
