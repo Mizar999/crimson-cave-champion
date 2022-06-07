@@ -37,13 +37,19 @@ export class Game {
         let actor: Actor;
         let command: Command;
         let commandResult: CommandResult;
-        
+
         while (true) {
             if (!commandResult || commandResult.result != CommandResultType.Wait) {
+                if (actor) {
+                    actor.onAfterTurn(this);
+                }
+
                 actor = this.scheduler.next();
+
                 if (!actor) {
                     break;
                 }
+                actor.onBeforeTurn(this);
             }
 
             command = await actor.takeTurn(this);

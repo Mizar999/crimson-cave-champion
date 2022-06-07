@@ -65,6 +65,10 @@ export class Player extends Actor {
         return this.command;
     }
 
+    onBeforeTurn(game: Game): void {
+        game.getMessageLog().addMessages(`${this.describe()} ${this.stats.hitPoints}/${this.stats.maxHitPoints} AC ${this.stats.armorClass} STR ${this.stats.strength.value}(${this.stats.strength.getModifier()}) DEX ${this.stats.dexterity.value}(${this.stats.dexterity.getModifier()}) CON ${this.stats.constitution.value}(${this.stats.constitution.getModifier()}) WIS ${this.stats.wisdom.value}(${this.stats.wisdom.getModifier()})`);
+    }
+
     private handleInput(event: KeyboardEvent): boolean {
         let attacks: Attack[] = [];
 

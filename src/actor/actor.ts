@@ -28,6 +28,12 @@ export abstract class Actor extends Entity {
         return Promise.resolve(new Command());
     }
 
+    onBeforeTurn(game: Game): void {
+    }
+
+    onAfterTurn(game: Game): void {
+    }
+
     describe(): string {
         return this.constructor.name;
     }
