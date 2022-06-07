@@ -112,19 +112,17 @@ export class SystemManager {
     static getDamage(attack: DiceValue): number {
         let damage = 0;
         let modifier = attack.modifier;
-        let rolls = attack.roll().dice.slice().sort((a, b) => b - a);
+        let rolls = attack.roll().dice.slice().sort((a, b) => b - a); // Sort in descending order
         let length = rolls.length;
 
-        let debug = [];
         rolls.forEach((value, index) => {
-            // Modifier is only applied to a single die
+            // Damge modifier is only applied to a single die
             if (modifier > 0) {
                 if ((value < 10 && value + modifier >= 10) || (value < 6 && value + modifier >= 6) || (value < 2 && value + modifier >= 2) || (index === length - 1)) {
                     value += modifier;
                     modifier = 0;
                 }
             }
-            debug.push(value);
 
             if (value >= 10) {
                 damage += 4;
@@ -134,7 +132,6 @@ export class SystemManager {
                 damage += 1;
             }
         });
-        console.log(rolls, debug);
         return damage;
     }
 
