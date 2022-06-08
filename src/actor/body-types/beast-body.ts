@@ -4,14 +4,19 @@ import { Attack } from "../../system/attack";
 import { BodyType } from "./body-type";
 
 export class BeastBody extends BodyType {
-    constructor(private readonly attacks: Map<string, Attack[]>, private readonly weights: {}) {
+    private data: { [key: number]: number };
+
+    constructor(private readonly weights: { weight: number, attacks: Attack[] }[]) {
         super();
+        
+        this.data = this.weights.reduce((previous, current, index) => ({
+            ...previous,
+            [index]: current.weight
+        }), {})
     }
 
     getAttacks(): Attack[] {
-        let key = RNG.getWeightedValue(this.weights);
-        if (this.attacks.has(key)) {
-            return this.attacks.get(key).slice();
-        }
+        let index = RNG.getWeightedValue(this.data);
+        return this.weights[index].attacks;
     }
 }
