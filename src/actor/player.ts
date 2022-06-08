@@ -11,12 +11,14 @@ import { PlayerStats } from "./player-stats";
 import { Attack } from "../system/attack";
 
 export class Player extends Actor {
+    speed: number;
     stats: PlayerStats;
     private command: Command;
 
     constructor(position: Point) {
         super(ActorType.Player, new Visual("@", "white"));
         this.position = position;
+        this.speed = Actor.defaultSpeed;
         this.stats = new PlayerStats();
     }
 
@@ -57,6 +59,10 @@ export class Player extends Actor {
             returnValue += temp[length];
         }
         return returnValue;
+    }
+
+    getSpeed(): number {
+        return this.speed;
     }
 
     async takeTurn(game: Game): Promise<Command> {

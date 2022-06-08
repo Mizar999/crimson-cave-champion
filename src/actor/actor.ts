@@ -7,8 +7,7 @@ import { Game } from "../game";
 
 export const enum ActorType {
     Player,
-    Creature,
-    Trap
+    Creature
 }
 
 export const enum SavingThrowType {
@@ -19,6 +18,7 @@ export const enum SavingThrowType {
 
 export abstract class Actor extends Entity {
     position: Point;
+    static readonly defaultSpeed: number = 10;
 
     constructor(public readonly type: ActorType, visual: Visual) {
         super(visual, BlockType.BlocksMovement);
@@ -32,6 +32,10 @@ export abstract class Actor extends Entity {
     }
 
     onAfterTurn(game: Game): void {
+    }
+
+    getSpeed(): number {
+        return Actor.defaultSpeed;
     }
 
     describe(): string {

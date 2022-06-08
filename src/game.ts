@@ -1,5 +1,5 @@
 import { Scheduler } from "rot-js/lib/index";
-import Simple from "rot-js/lib/scheduler/simple";
+import Speed from "rot-js/lib/scheduler/speed";
 
 import { MessageLog } from "./ui/messsage-log";
 import { ServiceLocator } from "./util/service-locator";
@@ -11,7 +11,7 @@ import { Command, CommandResult } from "./command/command";
 
 export class Game {
     private messageLog: MessageLog;
-    private scheduler: Simple;
+    private scheduler: Speed;
 
     constructor() {
         this.initialize();
@@ -29,7 +29,7 @@ export class Game {
 
         ServiceLocator.provideInputUtility(new InputUtility());
 
-        this.scheduler = new Scheduler.Simple();
+        this.scheduler = new Scheduler.Speed();
         this.scheduler.add(Player.createPlayer(), true);
     }
 
