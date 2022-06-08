@@ -112,29 +112,26 @@ export class SystemManager {
     }
 
     static getDamage(attack: DiceValue): number {
-        let damage = 0;
-        let modifier = attack.modifier;
-        let rolls = attack.roll().dice.slice().sort((a, b) => b - a); // Sort in descending order
-        let length = rolls.length;
+        let rolls = [...attack.roll().dice];
 
-        rolls.forEach((value, index) => {
-            // Damge modifier is only applied to a single die
-            if (modifier > 0) {
-                if ((value < 10 && value + modifier >= 10) || (value < 6 && value + modifier >= 6) || (value < 2 && value + modifier >= 2) || (index === length - 1)) {
-                    value += modifier;
-                    modifier = 0;
-                }
-            }
+        if (attack.modifier > 0) {
+            const differences = rolls.map(value => this.convertToDamage(value + attack.modifier) - this.convertToDamage(value));
+            const index = differences.indexOf(Math.max(...differences));
+            rolls[index] += attack.modifier;
+        }
 
-            if (value >= 10) {
-                damage += 4;
-            } else if (value >= 6) {
-                damage += 2;
-            } else if (value >= 2) {
-                damage += 1;
-            }
-        });
-        return damage;
+        return rolls.reduce((previous, current) => this.convertToDamage(current) + previous, 0);
+    }
+
+    private static convertToDamage(value: number): number {
+        if (value >= 10) {
+            return 4;
+        } else if (value >= 6) {
+            return 2;
+        } else if (value >= 2) {
+            return 1;
+        }
+        return 0;
     }
 
     static savingThrow(source: Actor, target: Actor, savingThrowType: SavingThrowType): boolean {
@@ -198,17 +195,17 @@ export class SystemManager {
             }
         } while (maxTries > 0 && maxModifier < 0);
 
-        if (Math.max.apply(null, result) < 16) {
-            let Indices: number[] = [];
-            let lowestValue = Math.min.apply(null, result);
+        if (Math.max(...result) < 16) {
+            let indices: number[] = [];
+            let lowestValue = Math.min(...result);
 
             result.forEach((value, index) => {
                 if (value == lowestValue) {
-                    Indices.push(index);
+                    indices.push(index);
                 }
             });
 
-            result[Indices.sort(() => 0.5 - RNG.getUniform())[0]] = 16;
+            result[indices.sort(() => 0.5 - RNG.getUniform())[0]] = 16;
         }
 
         return result;
@@ -216,7 +213,7 @@ export class SystemManager {
 
     static resultWithoutLowest(result: DiceResult): number {
         let temp: number[] = result.dice.slice();
-        temp.splice(temp.indexOf(Math.min.apply(null, temp)), 1);
+        temp.splice(temp.indexOf(Math.min(...temp)), 1);
         let length = temp.length;
         let returnValue = 0;
         while (length--) {
