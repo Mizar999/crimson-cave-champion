@@ -6,17 +6,20 @@ import { BodyType } from "./body-type";
 export class BeastBody extends BodyType {
     private data: { [key: number]: number };
 
-    constructor(private readonly weights: { weight: number, attacks: Attack[] }[]) {
+    constructor(private readonly weights?: { weight: number, attacks: Attack[] }[]) {
         super();
-        
+
         this.data = this.weights.reduce((previous, current, index) => ({
             ...previous,
             [index]: current.weight
-        }), {})
+        }), {});
     }
 
     getAttacks(): Attack[] {
-        let index = RNG.getWeightedValue(this.data);
-        return this.weights[index].attacks;
+        if (this.weights) {
+            let index = RNG.getWeightedValue(this.data);
+            return [...this.weights[index].attacks];
+        }
+        return [];
     }
 }

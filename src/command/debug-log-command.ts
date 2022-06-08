@@ -1,4 +1,5 @@
 import { Game } from "../game";
+import { ServiceLocator } from "../system/service-locator";
 import { Command, CommandResult } from "./command";
 
 export class DebugLogCommand extends Command {
@@ -7,7 +8,7 @@ export class DebugLogCommand extends Command {
     }
 
     execute(game: Game): Promise<CommandResult> {
-        game.getMessageLog().addMessages(this.message);
+        ServiceLocator.getMessageLog().addMessages(this.message);
         return this.finished();
     }
 }

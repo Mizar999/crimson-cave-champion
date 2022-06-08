@@ -1,5 +1,6 @@
 import { Visual } from "../ui/visual";
 import { Actor, SavingThrowType } from "../actor/actor";
+import { BodyType } from "./body-types/body-type";
 
 export class Breed {
     name: string;
@@ -9,6 +10,7 @@ export class Breed {
     baseSpeed: number;
     skillBonus: number;
     savingThrows: SavingThrowType[];
+    body: BodyType;
 
     constructor(params: any = {}) {
         let parent: any = {};
@@ -23,5 +25,6 @@ export class Breed {
         this.baseSpeed = params.baseSpeed || parent.baseSpeed || Actor.defaultSpeed;
         this.skillBonus = params.skillBonus || parent.skillBonus || 0;
         this.savingThrows = params.savingThrows || parent.savingThrows || [];
+        this.body = params.body || parent.body || new BodyType();
     }
 }

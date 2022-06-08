@@ -5,9 +5,10 @@ import { Player } from "../actor/player";
 import { Attribute } from "../actor/player-stats";
 import { Dice, DiceResult, DiceValue } from "../util/dice";
 import { Attack } from "./attack";
+import { ServiceLocator } from "./service-locator";
 
 export class SystemManager {
-    static attack(attacker: Actor, target: Actor, attacks: Attack[]): string {
+    static attack(attacker: Actor, target: Actor, attacks: Attack[]): void {
         let life: number;
         let targetLevel: number;
         switch (target.type) {
@@ -24,7 +25,8 @@ export class SystemManager {
         }
 
         if (life <= 0) {
-            return `${target.describe()} is already defeated`;
+            ServiceLocator.getMessageLog().addMessages(`${target.describe()} is already defeated`);
+            return;
         }
 
         let attackResult: { hit: boolean, diceResult: number, attackRoll: number, damage: number }[] = [];
@@ -107,8 +109,7 @@ export class SystemManager {
                 result += '/miss';
             }
         });
-        result = `${attacker.describe()} attacks ${target.describe()} for ${totalDamage} damage [${result}]`;
-        return result;
+        ServiceLocator.getMessageLog().addMessages(`${attacker.describe()} attacks ${target.describe()} for ${totalDamage} damage [${result}]`);
     }
 
     static getDamage(attack: DiceValue): number {

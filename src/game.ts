@@ -2,35 +2,29 @@ import { Scheduler } from "rot-js/lib/index";
 import Speed from "rot-js/lib/scheduler/speed";
 
 import { MessageLog } from "./ui/messsage-log";
-import { ServiceLocator } from "./util/service-locator";
+import { ServiceLocator } from "./system/service-locator";
+import { ActorFactory } from "./actor/actor-factory";
 import { InputUtility } from "./util/input-utility";
-import { Player } from "./actor/player";
-import { Point } from "./util/point";
 import { Actor } from "./actor/actor";
 import { Command, CommandResult } from "./command/command";
+import { ActorManager } from "./system/actor-manager";
 
 export class Game {
-    private messageLog: MessageLog;
-    private scheduler: Speed;
-
     constructor() {
         this.initialize();
         this.mainLoop();
     }
 
-    getMessageLog(): MessageLog {
-        return this.messageLog;
-    }
-
     private initialize(): void {
-        let maxMessages = 15;
-        this.messageLog = new MessageLog(document.getElementById("messages"), maxMessages);
-        this.messageLog.addMessages(...Array(maxMessages).fill("&nbsp;"));
-
         ServiceLocator.provideInputUtility(new InputUtility());
 
-        this.scheduler = new Scheduler.Speed();
-        this.scheduler.add(Player.createPlayer(), true);
+        let maxMessages = 15;
+        ServiceLocator.provideMessageLog(new MessageLog(document.getElementById("messages"), maxMessages));
+        ServiceLocator.getMessageLog().addMessages(...Array(maxMessages).fill("&nbsp;"));
+
+        ActorManager.initialize();
+        ActorManager.add(ActorFactory.createPlayer());
+        ActorManager.add(ActorFactory.createCreature());
     }
 
     private async mainLoop(): Promise<void> {
@@ -44,7 +38,7 @@ export class Game {
                     actor.onAfterTurn(this);
                 }
 
-                actor = this.scheduler.next();
+                actor = ActorManager.next();
 
                 if (!actor) {
                     break;
@@ -55,17 +49,8 @@ export class Game {
             command = await actor.takeTurn(this);
             commandResult = await command.execute(this);
             if (commandResult.message) {
-                this.messageLog.addMessages(commandResult.message);
+                ServiceLocator.getMessageLog().addMessages(commandResult.message);
             }
         }
-    }
-
-    private async debugInputHandling(): Promise<void> {
-        await ServiceLocator.getInputUtility().waitForInput(this.handleInput.bind(this));
-    }
-
-    private handleInput(event: KeyboardEvent): boolean {
-        this.messageLog.addMessages(event.key);
-        return true;
     }
 }
