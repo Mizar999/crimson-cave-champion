@@ -9,6 +9,7 @@ import { Game } from "../game";
 import { SystemManager } from "../system/system-manager";
 import { PlayerStats } from "./player-stats";
 import { Attack } from "../system/attack";
+import { RNG } from "rot-js";
 
 export class Player extends Actor {
     speed: number;
@@ -24,15 +25,7 @@ export class Player extends Actor {
 
     static createPlayer(): Player {
         let player: Player = new Player(new Point(0, 0));
-        let attributes: number[] = [];
-
-        for (let i = 0; i < 4; ++i) {
-            attributes.push(this.resultWithoutLowest(Dice.roll(4, 6)));
-        }
-
-        if (Math.max.apply(null, attributes) < 16) {
-            attributes[attributes.indexOf(Math.min.apply(null, attributes))] = 16;
-        }
+        let attributes: number[] = SystemManager.getAttributes(4);
 
         player.stats.strength.value = attributes[0];
         player.stats.dexterity.value = attributes[1];
@@ -48,17 +41,6 @@ export class Player extends Actor {
         player.stats.frayDie.sides = 8;
 
         return player;
-    }
-
-    private static resultWithoutLowest(result: DiceResult): number {
-        let temp: number[] = result.dice.slice();
-        temp.splice(temp.indexOf(Math.min.apply(null, temp)), 1);
-        let length = temp.length;
-        let returnValue = 0;
-        while (length--) {
-            returnValue += temp[length];
-        }
-        return returnValue;
     }
 
     getSpeed(): number {

@@ -1,7 +1,9 @@
+import { RNG } from "rot-js";
 import { Actor, ActorType, SavingThrowType } from "../actor/actor";
 import { Creature } from "../actor/creature";
 import { Player } from "../actor/player";
-import { Dice, DiceValue } from "../util/dice";
+import { Attribute } from "../actor/player-stats";
+import { Dice, DiceResult, DiceValue } from "../util/dice";
 import { Attack } from "./attack";
 
 export class SystemManager {
@@ -176,5 +178,50 @@ export class SystemManager {
         }
 
         return (diceResult + modifier) >= difficulty;
+    }
+
+    static getAttributes(quantity: number): number[] {
+        let result: number[];
+        let maxTries = 10;
+        let attribute = new Attribute();
+        let maxModifier: number;
+
+        do {
+            maxModifier = 0;
+            result = [];
+            --maxTries;
+
+            for (let i = 0; i < quantity; ++i) {
+                attribute.value = this.resultWithoutLowest(Dice.roll(4, 6));
+                maxModifier += attribute.getModifier();
+                result.push(attribute.value);
+            }
+        } while (maxTries > 0 && maxModifier < 0);
+
+        if (Math.max.apply(null, result) < 16) {
+            let Indices: number[] = [];
+            let lowestValue = Math.min.apply(null, result);
+
+            result.forEach((value, index) => {
+                if (value == lowestValue) {
+                    Indices.push(index);
+                }
+            });
+
+            result[Indices.sort(() => 0.5 - RNG.getUniform())[0]] = 16;
+        }
+
+        return result;
+    }
+
+    static resultWithoutLowest(result: DiceResult): number {
+        let temp: number[] = result.dice.slice();
+        temp.splice(temp.indexOf(Math.min.apply(null, temp)), 1);
+        let length = temp.length;
+        let returnValue = 0;
+        while (length--) {
+            returnValue += temp[length];
+        }
+        return returnValue;
     }
 }
