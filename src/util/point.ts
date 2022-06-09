@@ -1,32 +1,34 @@
 export class Point {
     constructor(public x: number, public y: number) { }
+}
 
-    toKey(): string {
-        return this.x + "," + this.y;
+export class PointUtil {
+    static toKey(point: Point): string {
+        return point.x + "," + point.y;
     }
 
-    equals(point: Point): boolean {
-        return this.x == point.x && this.y == point.y;
+    static equals(left: Point, right: Point): boolean {
+        return left.x == right.x && left.y == right.y;
     }
 
-    plus(point: Point): Point {
-        this.x += point.x;
-        this.y += point.y;
-        return this;
+    static plus(left: Point, right: Point): Point {
+        left.x += right.x;
+        left.y += right.y;
+        return left;
     }
 
-    minus(point: Point): Point {
-        this.x -= point.x;
-        this.y -= point.y;
-        return this;
+    static minus(left: Point, right: Point): Point {
+        left.x -= right.x;
+        left.y -= right.y;
+        return left;
     }
 
-    toString(): string {
-        return `[${this.x}, ${this.y}]`;
+    static toString(point: Point): string {
+        return `[${point.x}, ${point.y}]`;
     }
 
     static fromKey(key: string): Point {
         let parts = key.split(",");
-        return new Point(parseInt(parts[0]), parseInt(parts[1]));
+        return { x: parseInt(parts[0]), y: parseInt(parts[1]) };
     }
 }
