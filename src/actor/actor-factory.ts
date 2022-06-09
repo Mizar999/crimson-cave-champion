@@ -4,8 +4,8 @@ import { Player } from "./player";
 import { Point } from "../util/point";
 import { Creature } from "./creature";
 import { Breed } from "./breed";
-import { BodyType } from "./body-types/body-type";
-import { BeastBody } from "./body-types/beast-body";
+import { BodyType } from "../body-types/body-type";
+import { BeastBody } from "../body-types/beast-body";
 import { Attack } from "../system/attack";
 import { DiceValue } from "../util/dice";
 

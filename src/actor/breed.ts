@@ -1,6 +1,6 @@
 import { Visual } from "../ui/visual";
 import { Actor, SavingThrowType } from "../actor/actor";
-import { BodyType } from "./body-types/body-type";
+import { BodyType } from "../body-types/body-type";
 
 export class Breed {
     name: string;

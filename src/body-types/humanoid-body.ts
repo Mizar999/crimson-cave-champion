@@ -1,5 +1,5 @@
-import { Attack } from "../../system/attack";
-import { DiceValue } from "../../util/dice";
+import { Attack } from "../system/attack";
+import { DiceValue } from "../util/dice";
 import { BodyType } from "./body-type";
 
 export class HumanoidBody extends BodyType {

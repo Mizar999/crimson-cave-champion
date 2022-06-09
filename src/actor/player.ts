@@ -8,7 +8,7 @@ import { Game } from "../game";
 import { PlayerStats } from "./player-stats";
 import { Attack } from "../system/attack";
 import { ActorManager } from "../system/actor-manager";
-import { HumanoidBody } from "./body-types/humanoid-body";
+import { HumanoidBody } from "../body-types/humanoid-body";
 import { DebugLogCommand } from "../command/debug-log-command";
 
 export class Player extends Actor {

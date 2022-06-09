@@ -1,6 +1,6 @@
 import { RNG } from "rot-js/lib/index";
 
-import { Attack } from "../../system/attack";
+import { Attack } from "../system/attack";
 import { BodyType } from "./body-type";
 
 export class BeastBody extends BodyType {

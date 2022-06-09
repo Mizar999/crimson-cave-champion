@@ -1,4 +1,4 @@
-import { Attack } from "../../system/attack";
+import { Attack } from "../system/attack";
 
 export class BodyType {
     getAttacks(): Attack[] {
