@@ -39,4 +39,8 @@ export class Creature extends Actor {
     getSpeed(): number {
         return this.speed;
     }
+
+    describe(): string {
+        return this.breed.name;
+    }
 }

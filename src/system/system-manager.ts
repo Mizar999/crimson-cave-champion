@@ -100,7 +100,15 @@ export class SystemManager {
                 result += '/miss';
             }
         });
-        ServiceLocator.getMessageLog().addMessages(`${attacker.describe()} attacks ${target.describe()} for ${totalDamage} damage [${result}]`);
+
+        let prefix: string;
+        if (attacker.type == ActorType.Player) {
+            prefix = `You attack ${target.describe()}`;
+        } else {
+            prefix = `${attacker.describe()} attacks you`;
+        }
+
+        ServiceLocator.getMessageLog().addMessages(`${prefix} for ${totalDamage} damage [${result}]`);
     }
 
     static getDamage(attack: DiceValue): number {
