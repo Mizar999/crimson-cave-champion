@@ -9,6 +9,10 @@ export class BeastBody extends BodyType {
     constructor(private readonly weights?: { weight: number, attacks: Attack[] }[]) {
         super();
 
+        if (!this.weights) {
+            this.weights = [];
+        }
+
         this.data = this.weights.reduce((previous, current, index) => ({
             ...previous,
             [index]: current.weight

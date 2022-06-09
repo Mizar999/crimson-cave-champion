@@ -28,8 +28,12 @@ export class Creature extends Actor {
     }
 
     getArmorClass(): number {
-        // TODO check equipment
-        return this.breed.armorClass;
+        let armorClass = this.breed.body.getArmorClass();
+        if (!armorClass) {
+            armorClass = this.breed.armorClass;
+        }
+
+        return armorClass + this.breed.body.getArmorClassModifier();
     }
 
     getSpeed(): number {

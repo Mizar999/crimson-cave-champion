@@ -5,7 +5,11 @@ export class BodyType {
         return [];
     }
 
-    getArmorClassBonus(): number {
+    getArmorClass(): number {
+        return undefined;
+    }
+
+    getArmorClassModifier(): number {
         return 0;
     }
 }

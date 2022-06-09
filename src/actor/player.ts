@@ -35,8 +35,12 @@ export class Player extends Actor {
     }
 
     getArmorClass(): number {
-        // TODO check equipment
-        return Math.min(9, 9 - this.stats.dexterity.getModifier());
+        let armorClass = this.body.getArmorClass();
+        if (!armorClass) {
+            armorClass = 9;
+        }
+
+        return Math.min(9, armorClass - this.body.getArmorClassModifier() - this.stats.dexterity.getModifier());
     }
 
     getSpeed(): number {
