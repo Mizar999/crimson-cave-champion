@@ -22,13 +22,24 @@ export class ActorManager {
         return ActorManager.scheduler.next();
     }
 
-    static getActor(type: ActorType): Actor {
+    static getActor(filter: (actor: Actor) => boolean): Actor {
         for(let actor of ActorManager.actors) {
-            if (actor.type == type) {
+            if (filter(actor)) {
                 return actor;
             }
         }
 
         return undefined;
+    }
+
+    static getActors(filter: (actor: Actor) => boolean): Actor[] {
+        let result: Actor[] = [];
+        for(let actor of ActorManager.actors) {
+            if (filter(actor)) {
+                result.push(actor);
+            }
+        }
+
+        return result;
     }
 }

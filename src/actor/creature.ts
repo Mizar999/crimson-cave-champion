@@ -20,7 +20,7 @@ export class Creature extends Actor {
 
     async takeTurn(game: Game): Promise<Command> {
         // TODO add AI
-        let player = ActorManager.getActor(ActorType.Player);
+        let player = ActorManager.getActor((actor) => actor.type == ActorType.Player);
         if (player) {
             return new AttackCommand(this, player, this.breed.body.getAttacks());
         } 

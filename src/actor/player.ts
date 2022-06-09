@@ -54,7 +54,7 @@ export class Player extends Actor {
     }
 
     private handleInput(event: KeyboardEvent): boolean {
-        let creature = ActorManager.getActor(ActorType.Creature);
+        let creature = ActorManager.getActor((actor) => actor.type == ActorType.Creature);
 
         if (creature) {
             let attacks: Attack[] = this.body.getAttacks();
