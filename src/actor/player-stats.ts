@@ -22,7 +22,7 @@ export class PlayerStats {
         this.constitution = new Attribute();
         this.wisdom = new Attribute();
 
-        this.frayDie = new DiceValue(0, 1);
+        this.frayDie = {numberOf: 0, sides: 1};
     }
 }
 

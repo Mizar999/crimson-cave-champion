@@ -11,7 +11,7 @@ export class HumanoidBody extends BodyType {
         this.attacks = [];
 
         let attack = new Attack();
-        attack.damage = new DiceValue(1, 2);
+        attack.damage = {numberOf: 1, sides: 2};
         attack.isFrayDie = false;
         this.attacks.push(attack);
     }

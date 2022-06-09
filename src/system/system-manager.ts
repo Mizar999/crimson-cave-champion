@@ -8,6 +8,10 @@ import { Attack } from "./attack";
 import { ServiceLocator } from "./service-locator";
 
 export class SystemManager {
+    private static attackDice: DiceValue = {numberOf: 1, sides: 20};
+    private static savingThrowDice: DiceValue = {numberOf: 2, sides: 8};
+    private static attributeDice: DiceValue = {numberOf: 4, sides: 6};
+
     static attack(attacker: Actor, target: Actor, attacks: Attack[]): void {
         let life: number;
         let targetLevel: number;
@@ -40,7 +44,7 @@ export class SystemManager {
                     hit = (<Player>attacker).stats.level >= targetLevel;
                 }
             } else {
-                let diceResult = Dice.roll(1, 20).result;
+                let diceResult = Dice.roll(this.attackDice).result;
                 nextResult.diceResult = diceResult;
 
                 hit = diceResult >= 20;
@@ -112,7 +116,7 @@ export class SystemManager {
     }
 
     static getDamage(attack: DiceValue): number {
-        let rolls = [...attack.roll().dice];
+        let rolls = [...Dice.roll(attack).dice];
 
         if (attack.modifier > 0) {
             const differences = rolls.map(value => this.convertToDamage(value + attack.modifier) - this.convertToDamage(value));
@@ -135,7 +139,7 @@ export class SystemManager {
     }
 
     static savingThrow(source: Actor, target: Actor, savingThrowType: SavingThrowType): boolean {
-        let diceResult = Dice.roll(2, 8).result;
+        let diceResult = Dice.roll(this.savingThrowDice).result;
         if (diceResult <= 2) {
             return false;
         } else if (diceResult >= 16) {
@@ -189,7 +193,7 @@ export class SystemManager {
             --maxTries;
 
             for (let i = 0; i < quantity; ++i) {
-                attribute.value = this.resultWithoutLowest(Dice.roll(4, 6));
+                attribute.value = this.resultWithoutLowest(Dice.roll(this.attributeDice));
                 maxModifier += attribute.getModifier();
                 result.push(attribute.value);
             }

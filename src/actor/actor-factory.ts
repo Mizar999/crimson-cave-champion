@@ -33,7 +33,7 @@ export class ActorFactory {
 
     static createCreature(): Creature {
         let attack = new Attack();
-        attack.damage = new DiceValue(1, 6);
+        attack.damage = {numberOf: 1, sides: 6};
         attack.attackBonus = 6;
 
         let breed: Breed = new Breed({

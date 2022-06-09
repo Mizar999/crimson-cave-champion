@@ -1,4 +1,4 @@
-import { Dice, DiceValue } from "../util/dice";
+import { DiceValue } from "../util/dice";
 
 export class Attack {
     damage: DiceValue;
@@ -6,7 +6,7 @@ export class Attack {
     isFrayDie: Boolean;
 
     constructor() {
-        this.damage = new DiceValue(0, 1);
+        this.damage = {numberOf: 0, sides: 1};
         this.attackBonus = 0;
         this.isFrayDie = false;
     }
