@@ -51,6 +51,17 @@ export class Throw {
         if (targets) {
             this.onHit(source, targets);
         }
+    }   
+}
+
+export class Shot { // extends Throw?
+    hits: (source: Actor) => Entity[];
+    onHit: (source, targets: Entity[]) => void;
+
+    shoot(source: Actor) {
+        const targets = this.hits(source);
+        if (targets) {
+            this.onHit(source, targets);
+        }
     }
-    
 }
