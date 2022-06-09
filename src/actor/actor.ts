@@ -21,7 +21,7 @@ export abstract class Actor extends Entity {
     static readonly defaultSpeed: number = 10;
 
     constructor(public readonly type: ActorType, visual: Visual) {
-        super(visual, BlockType.BlocksMovement);
+        super(visual, "BlocksMovement");
     }
 
     takeTurn(game: Game): Promise<Command> {

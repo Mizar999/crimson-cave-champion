@@ -1,4 +1,1 @@
-export const enum BlockType {
-    BlocksNone,
-    BlocksMovement
-}
+export type BlockType = "BlocksNone" | "BlocksMovement";
