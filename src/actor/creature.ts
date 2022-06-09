@@ -27,6 +27,11 @@ export class Creature extends Actor {
         return new DebugLogCommand('Could not find player!');
     }
 
+    getArmorClass(): number {
+        // TODO check equipment
+        return this.breed.armorClass;
+    }
+
     getSpeed(): number {
         return this.speed;
     }

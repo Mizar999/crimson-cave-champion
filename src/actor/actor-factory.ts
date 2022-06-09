@@ -21,13 +21,12 @@ export class ActorFactory {
 
         player.stats.maxHitPoints = 8 + player.stats.constitution.getModifier();
         player.stats.hitPoints = player.stats.maxHitPoints;
-        player.stats.armorClass = Math.min(9, 9 - player.stats.dexterity.getModifier());
         player.stats.attackBonus = 1;
 
         player.stats.frayDie.numberOf = 1;
         player.stats.frayDie.sides = 8;
 
-        ServiceLocator.getMessageLog().addMessages(`${player.describe()} ${player.stats.hitPoints}/${player.stats.maxHitPoints} AC ${player.stats.armorClass} STR ${player.stats.strength.value}(${player.stats.strength.getModifier()}) DEX ${player.stats.dexterity.value}(${player.stats.dexterity.getModifier()}) CON ${player.stats.constitution.value}(${player.stats.constitution.getModifier()}) WIS ${player.stats.wisdom.value}(${player.stats.wisdom.getModifier()})`);
+        ServiceLocator.getMessageLog().addMessages(`${player.describe()} ${player.stats.hitPoints}/${player.stats.maxHitPoints} AC ${player.getArmorClass()} STR ${player.stats.strength.value}(${player.stats.strength.getModifier()}) DEX ${player.stats.dexterity.value}(${player.stats.dexterity.getModifier()}) CON ${player.stats.constitution.value}(${player.stats.constitution.getModifier()}) WIS ${player.stats.wisdom.value}(${player.stats.wisdom.getModifier()})`);
 
         return player;
     }

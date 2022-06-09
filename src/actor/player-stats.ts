@@ -9,7 +9,6 @@ export class PlayerStats {
     level: number;
     xp: number;
 
-    armorClass: number;
     attackBonus: number;
     hitPoints: number;
     frayDie: DiceValue;

@@ -34,6 +34,11 @@ export class Player extends Actor {
         this.playerAttacks.push(attack);
     }
 
+    getArmorClass(): number {
+        // TODO check equipment
+        return Math.min(9, 9 - this.stats.dexterity.getModifier());
+    }
+
     getSpeed(): number {
         return this.speed;
     }

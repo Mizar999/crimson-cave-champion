@@ -34,6 +34,8 @@ export abstract class Actor extends Entity {
     onAfterTurn(game: Game): void {
     }
 
+    abstract getArmorClass(): number;
+
     getSpeed(): number {
         return Actor.defaultSpeed;
     }

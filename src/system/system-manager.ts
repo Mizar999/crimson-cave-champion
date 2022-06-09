@@ -45,16 +45,7 @@ export class SystemManager {
 
                 hit = diceResult >= 20;
                 if (!hit && diceResult > 1) {
-                    let armorClass = 0;
-                    switch (target.type) {
-                        case ActorType.Player:
-                            armorClass = (<Player>target).stats.armorClass;
-                            break;
-                        case ActorType.Creature:
-                            armorClass = (<Creature>target).breed.armorClass;
-                            break;
-                    }
-                    let attackRoll = (diceResult + attack.attackBonus + armorClass);
+                    let attackRoll = (diceResult + attack.attackBonus + target.getArmorClass());
                     nextResult.attackRoll = attackRoll;
                     hit = attackRoll >= 20;
                 }
