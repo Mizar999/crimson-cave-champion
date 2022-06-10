@@ -4,10 +4,8 @@ import { Player } from "./player";
 import { Point } from "../util/point";
 import { Creature } from "./creature";
 import { Breed } from "./breed";
-import { BodyType } from "../body-types/body-type";
-import { BeastBody } from "../body-types/beast-body";
 import { Attack } from "../system/attack";
-import { DiceValue } from "../util/dice";
+import { BodyData } from "../body/body-data";
 
 export class ActorFactory {
     static createPlayer(): Player {
@@ -32,13 +30,13 @@ export class ActorFactory {
     }
 
     static createCreature(): Creature {
-        const attack = new Attack({damage: {numberOf: 1, sides: 6}, attackBonus: 6});
+        const attack = new Attack({ damage: { numberOf: 1, sides: 6 }, attackBonus: 6 });
 
         let breed: Breed = new Breed({
             name: "Kappa",
             maxHitDice: 6,
             armorClass: 5,
-            body: new BeastBody([{ weight: 1, attacks: [attack, attack] }])
+            body: new BodyData({ naturalAttacks: [{ weight: 1, attacks: [attack, attack] }] })
         });
         return new Creature(new Point(0, 0), breed);
     }

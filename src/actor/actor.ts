@@ -1,6 +1,5 @@
 import { Entity } from "../ui/entity";
 import { Visual } from "../ui/visual";
-import { BlockType } from "../ui/map/block-type";
 import { Point } from "../util/point";
 import { Command } from "../command/command";
 import { Game } from "../game";

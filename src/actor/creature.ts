@@ -5,7 +5,8 @@ import { Game } from "../game";
 import { ActorManager } from "../system/actor-manager";
 import { Point } from "../util/point";
 import { Actor, ActorType } from "./actor";
-import {Breed} from "./breed";
+import { Breed } from "./breed";
+import { BodyController } from "../body/body-data";
 
 export class Creature extends Actor {
     hitDice: number;
@@ -22,18 +23,13 @@ export class Creature extends Actor {
         // TODO add AI
         let player = ActorManager.getActor((actor) => actor.type == ActorType.Player);
         if (player) {
-            return new AttackCommand(this, player, this.breed.body.getAttacks());
-        } 
+            return new AttackCommand(this, player,  BodyController.getAttacks(this.breed.body));
+        }
         return new DebugLogCommand('Could not find player!');
     }
 
     getArmorClass(): number {
-        let armorClass = this.breed.body.getArmorClass();
-        if (!armorClass) {
-            armorClass = this.breed.armorClass;
-        }
-
-        return armorClass + this.breed.body.getArmorClassModifier();
+        return (this.breed.body.armorClass || 0) + this.breed.body.armorClassModifier;
     }
 
     getSpeed(): number {

@@ -8,34 +8,40 @@ import { Game } from "../game";
 import { PlayerStats } from "./player-stats";
 import { Attack } from "../system/attack";
 import { ActorManager } from "../system/actor-manager";
-import { HumanoidBody } from "../body-types/humanoid-body";
 import { DebugLogCommand } from "../command/debug-log-command";
+import { BodyController, BodyData } from "../body/body-data";
 
 export class Player extends Actor {
     speed: number;
     stats: PlayerStats;
-    body: HumanoidBody;
+    body: BodyData;
 
     private command: Command;
-    private playerAttacks: Attack[];
 
     constructor(position: Point) {
         super(ActorType.Player, new Visual("@", "white"));
         this.position = position;
         this.speed = Actor.defaultSpeed;
         this.stats = new PlayerStats();
-        this.body = new HumanoidBody();
-
-        this.playerAttacks = [new Attack({damage: this.stats.frayDie, isFrayDie: true})];
+        this.body = new BodyData({
+            equipment: [
+                {type: "Hand", items: [], maximum: 2},
+                {type: "Finger", items: [], maximum: 2},
+                {type: "Body", items: [], maximum: 1},
+                {type: "Neck", items: [], maximum: 1}
+            ],
+            naturalAttacks: [{weight: 1, attacks: [new Attack({damage: {numberOf: 1, sides: 2}})]}],
+            additionalAttacks: [new Attack({damage: this.stats.frayDie, isFrayDie: true})]
+        });
     }
 
     getArmorClass(): number {
-        let armorClass = this.body.getArmorClass();
+        let armorClass = this.body.armorClass;
         if (!armorClass) {
             armorClass = 9;
         }
 
-        return Math.min(9, armorClass - this.body.getArmorClassModifier() - this.stats.dexterity.getModifier());
+        return Math.min(9, armorClass - this.body.armorClassModifier - this.stats.dexterity.getModifier());
     }
 
     getSpeed(): number {
@@ -52,8 +58,7 @@ export class Player extends Actor {
         let creature = ActorManager.getActor((actor) => actor.type == ActorType.Creature);
 
         if (creature) {
-            let attacks: Attack[] = this.body.getAttacks();
-            attacks.push(...this.playerAttacks);
+            let attacks: Attack[] = BodyController.getAttacks(this.body);
             this.command = new AttackCommand(this, creature, attacks);
         } else {
             this.command = new DebugLogCommand('Could not find creature!');

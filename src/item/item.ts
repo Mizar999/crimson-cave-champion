@@ -2,14 +2,7 @@ import { Attack } from "../system/attack";
 import { Actor } from "../actor/actor";
 import { Entity } from "../ui/entity";
 
-export const enum SlotType {
-    None,
-    MainHand,
-    OffHand,
-    TwoHand,
-    Armor,
-    Ring
-}
+export type SlotType = "None" | "MainHand" | "OffHand" | "TwoHand" | "Armor" | "Ring";
 
 export class Item {
     private name: string;
@@ -51,7 +44,7 @@ export class Throw {
         if (targets) {
             this.onHit(source, targets);
         }
-    }   
+    }
 }
 
 export class Shot { // extends Throw?
