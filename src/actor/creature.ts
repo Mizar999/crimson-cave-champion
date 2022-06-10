@@ -3,40 +3,53 @@ import { DebugLogCommand } from "../command/debug-log-command";
 import { Command } from "../command/command";
 import { Game } from "../game";
 import { ActorManager } from "../system/actor-manager";
-import { Point } from "../util/point";
-import { Actor, ActorType } from "./actor";
-import { Breed } from "./breed";
-import { BodyController } from "../body/body-data";
+import { Actor, ActorController, SavingThrowType } from "./actor";
+import { BodyController, BodyData } from "../body/body-data";
+import { Visual } from "../ui/visual";
 
 export class Creature extends Actor {
+    name: string;
+    maxHitDice: number;
     hitDice: number;
-    speed: number;
+    skillBonus: number;
+    savingThrows: SavingThrowType[];
+    body: BodyData;
 
-    constructor(position: Point, public breed: Breed) {
-        super("Creature", breed.visual);
-        this.position = position;
-        this.hitDice = breed.maxHitDice;
-        this.speed = breed.baseSpeed;
+    constructor(params: Partial<Creature> = {}) {
+        super("Creature", (params.visual || new Visual("?", "red", "white")), params.speed, params.point);
+
+        this.name = params.name || "Unknown Creature";
+        this.maxHitDice = params.maxHitDice || 1;
+        this.hitDice = params.hitDice || this.maxHitDice;
+        this.skillBonus = params.skillBonus || 0;
+        this.savingThrows = params.savingThrows || [];
+        this.body = params.body || new BodyData();
+    }
+}
+
+export class CreatureController extends ActorController {
+    constructor(public creature: Creature) {
+        super();
     }
 
     async takeTurn(game: Game): Promise<Command> {
         // TODO add AI
         let player = ActorManager.getActor((actor) => actor.type == "Player");
         if (player) {
-            return new AttackCommand(this, player, BodyController.getAttacks(this.breed.body));
+            return new AttackCommand(this.creature, player, BodyController.getAttacks(this.creature.body));
         }
         return new DebugLogCommand('Could not find player!');
     }
 
     getArmorClass(): number {
-        return (this.breed.body.armorClass || 0) + this.breed.body.armorClassModifier;
+        return (this.creature.body.armorClass || 0) + this.creature.body.armorClassModifier;
     }
 
     getSpeed(): number {
-        return this.speed;
+        return this.creature.speed;
     }
 
     describe(): string {
-        return this.breed.name;
+        return this.creature.name;
     }
 }

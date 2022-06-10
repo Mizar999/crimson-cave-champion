@@ -1,43 +1,38 @@
 import { SystemManager } from "../system/system-manager";
-import { ServiceLocator } from "../system/service-locator";
-import { Player } from "./player";
-import { Point } from "../util/point";
+import { Player, PlayerController } from "./player";
 import { Creature } from "./creature";
-import { Breed } from "./breed";
 import { Attack } from "../system/attack";
 import { BodyData } from "../body/body-data";
 
 export class ActorFactory {
     static createPlayer(): Player {
-        // let player: Player = new Player(new Point(0, 0));
-        // let attributes: number[] = SystemManager.getAttributes(4);
+        let attributes: number[] = SystemManager.getAttributes(4);
+        const player = new Player({
+            strength: attributes[0],
+            dexterity: attributes[1],
+            constitution: attributes[2],
+            wisdom: attributes[3],
+            maxHitPoints: 8 + PlayerController.getAttributeModifier(attributes[2]),
+            attackBonus: 1,
+            frayDie: { numberOf: 1, sides: 8 },
+            body: new BodyData({
+                naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }]
+            })
+        });
 
-        // player.stats.strength.value = attributes[0];
-        // player.stats.dexterity.value = attributes[1];
-        // player.stats.constitution.value = attributes[2];
-        // player.stats.wisdom.value = attributes[3];
-
-        // player.stats.maxHitPoints = 8 + player.stats.constitution.getModifier();
-        // player.stats.hitPoints = player.stats.maxHitPoints;
-        // player.stats.attackBonus = 1;
-
-        // player.stats.frayDie = {numberOf: 1, sides: 8};
-
-        // ServiceLocator.getMessageLog().addMessages(`${player.describe()} ${player.stats.hitPoints}/${player.stats.maxHitPoints} AC ${player.getArmorClass()} STR ${player.stats.strength.value}(${player.stats.strength.getModifier()}) DEX ${player.stats.dexterity.value}(${player.stats.dexterity.getModifier()}) CON ${player.stats.constitution.value}(${player.stats.constitution.getModifier()}) WIS ${player.stats.wisdom.value}(${player.stats.wisdom.getModifier()})`);
-
-        // return player;
-        return undefined;
+        return player;
     }
 
     static createCreature(): Creature {
         const attack = new Attack({ damage: { numberOf: 1, sides: 6 }, attackBonus: 6 });
 
-        let breed: Breed = new Breed({
+        return new Creature({
             name: "Kappa",
             maxHitDice: 6,
-            armorClass: 5,
-            body: new BodyData({ naturalAttacks: [{ weight: 1, attacks: [attack, attack] }] })
+            body: new BodyData({
+                armorClass: 5,
+                naturalAttacks: [{ weight: 1, attacks: [attack, attack] }]
+            })
         });
-        return new Creature(new Point(0, 0), breed);
     }
 }

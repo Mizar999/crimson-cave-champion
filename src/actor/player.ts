@@ -1,4 +1,4 @@
-import { Actor } from "./actor";
+import { Actor, ActorController } from "./actor";
 import { Visual } from "../ui/visual";
 import { BodyController, BodyData } from "../body/body-data";
 import { DiceValue } from "../util/dice";
@@ -40,17 +40,55 @@ export class Player extends Actor {
     }
 }
 
-export class PlayerController {
-    private static player: Player;
-    private static command: Command;
+export class PlayerController extends ActorController {
+    private command: Command;
 
-    static async takeTurn(game: Game, actor: Player): Promise<Command> {
+    constructor(public player: Player) {
+        super();
+    }
+    
+    async takeTurn(game: Game): Promise<Command> {
         this.command = undefined;
         await ServiceLocator.getInputUtility().waitForInput(this.handleInput.bind(this));
         return this.command;
     }
 
-    private static handleInput(event: KeyboardEvent): boolean {
+    getSpeed(): number {
+        return this.player.speed;
+    }
+
+    getArmorClass(): number {
+        let armorClass = this.player.body.armorClass;
+        if (!armorClass) {
+            armorClass = 9;
+        }
+
+        return Math.min(9, armorClass - this.player.body.armorClassModifier - PlayerController.getAttributeModifier(this.player.dexterity));
+    }
+
+    describe(): string {
+        return this.player.constructor.name;
+    }
+
+    static getAttributeModifier(attribute: number): number {
+        if (attribute <= 3) {
+            return -3;
+        } else if (attribute <= 5) {
+            return -2;
+        } else if (attribute <= 8) {
+            return -1;
+        } else if (attribute >= 18) {
+            return 3;
+        } else if (attribute >= 16) {
+            return 2;
+        } else if (attribute >= 13) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private handleInput(event: KeyboardEvent): boolean {
         let creature = ActorManager.getActor((actor) => actor.type == "Creature");
 
         if (creature) {
