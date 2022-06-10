@@ -26,12 +26,7 @@ export class Player extends Actor {
         this.stats = new PlayerStats();
         this.body = new HumanoidBody();
 
-        this.playerAttacks = [];
-
-        let attack = new Attack();
-        attack.damage = this.stats.frayDie;
-        attack.isFrayDie = true;
-        this.playerAttacks.push(attack);
+        this.playerAttacks = [new Attack({damage: this.stats.frayDie, isFrayDie: true})];
     }
 
     getArmorClass(): number {

@@ -38,7 +38,7 @@ export class SystemManager {
         attacks.forEach(attack => {
             let nextResult = { hit: false, diceResult: 0, attackRoll: 0, damage: 0 };
             let hit = false;
-
+            
             if (attack.isFrayDie) {
                 if (attacker.type === ActorType.Player && targetLevel) {
                     hit = (<Player>attacker).stats.level >= targetLevel;
@@ -118,7 +118,7 @@ export class SystemManager {
     static getDamage(attack: DiceValue): number {
         let rolls = [...Dice.roll(attack).dice];
 
-        if (attack.modifier > 0) {
+        if (attack.modifier) {
             const differences = rolls.map(value => this.convertToDamage(value + attack.modifier) - this.convertToDamage(value));
             const index = differences.indexOf(Math.max(...differences));
             rolls[index] += attack.modifier;

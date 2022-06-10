@@ -5,9 +5,9 @@ export class Attack {
     attackBonus: number;
     isFrayDie: Boolean;
 
-    constructor() {
-        this.damage = {numberOf: 0, sides: 1};
-        this.attackBonus = 0;
-        this.isFrayDie = false;
+    constructor(params: Partial<Attack> = {}) {
+        this.damage = params.damage || {numberOf: 0, sides: 1};
+        this.attackBonus = params.attackBonus || 0;
+        this.isFrayDie = params.isFrayDie || false;
     }
 }

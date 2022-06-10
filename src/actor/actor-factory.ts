@@ -32,9 +32,7 @@ export class ActorFactory {
     }
 
     static createCreature(): Creature {
-        let attack = new Attack();
-        attack.damage = {numberOf: 1, sides: 6};
-        attack.attackBonus = 6;
+        const attack = new Attack({damage: {numberOf: 1, sides: 6}, attackBonus: 6});
 
         let breed: Breed = new Breed({
             name: "Kappa",

@@ -6,15 +6,10 @@ export class DiceResult {
 
 export class Dice {
     static roll(data: DiceValue): DiceResult {
-        data.sides = Math.max(data.sides, 1);
-        let sum = 0;
-        let dice: number[] = [];
-        while (data.numberOf > 0) {
-            dice.push(RNG.getUniformInt(1, data.sides));
-            sum += dice[dice.length - 1];
-            --data.numberOf;
-        }
-        return new DiceResult(sum + data.modifier, data.sides, data.modifier, dice);
+        const sides = Math.max(data.sides, 1);
+        const modifier = data.modifier || 0;
+        let dice = Array<number>(data.numberOf).fill(0).map(() => RNG.getUniformInt(1, sides));
+        return new DiceResult(dice.reduce((previous, current) => previous + current) + modifier, sides, modifier, dice);
     }
 }
 
