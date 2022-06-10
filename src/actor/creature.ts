@@ -13,7 +13,7 @@ export class Creature extends Actor {
     speed: number;
 
     constructor(position: Point, public breed: Breed) {
-        super(ActorType.Creature, breed.visual);
+        super("Creature", breed.visual);
         this.position = position;
         this.hitDice = breed.maxHitDice;
         this.speed = breed.baseSpeed;
@@ -21,9 +21,9 @@ export class Creature extends Actor {
 
     async takeTurn(game: Game): Promise<Command> {
         // TODO add AI
-        let player = ActorManager.getActor((actor) => actor.type == ActorType.Player);
+        let player = ActorManager.getActor((actor) => actor.type == "Player");
         if (player) {
-            return new AttackCommand(this, player,  BodyController.getAttacks(this.breed.body));
+            return new AttackCommand(this, player, BodyController.getAttacks(this.breed.body));
         }
         return new DebugLogCommand('Could not find player!');
     }

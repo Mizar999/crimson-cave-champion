@@ -1,5 +1,5 @@
 import { Visual } from "../ui/visual";
-import { Actor, SavingThrowType } from "../actor/actor";
+import { ActorController, SavingThrowType } from "../actor/actor";
 import { BodyData } from "../body/body-data";
 
 export class Breed {
@@ -15,7 +15,7 @@ export class Breed {
         this.name = params.name || "unknown breed";
         this.visual = params.visual || new Visual('?', "red", "white");
         this.maxHitDice = params.maxHitDice || 1;
-        this.baseSpeed = params.baseSpeed || Actor.defaultSpeed;
+        this.baseSpeed = params.baseSpeed || ActorController.defaultSpeed;
         this.skillBonus = params.skillBonus || 0;
         this.savingThrows = params.savingThrows || [];
         this.body = params.body || new BodyData();

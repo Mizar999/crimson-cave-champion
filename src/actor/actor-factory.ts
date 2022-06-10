@@ -9,24 +9,24 @@ import { BodyData } from "../body/body-data";
 
 export class ActorFactory {
     static createPlayer(): Player {
-        let player: Player = new Player(new Point(0, 0));
-        let attributes: number[] = SystemManager.getAttributes(4);
+        // let player: Player = new Player(new Point(0, 0));
+        // let attributes: number[] = SystemManager.getAttributes(4);
 
-        player.stats.strength.value = attributes[0];
-        player.stats.dexterity.value = attributes[1];
-        player.stats.constitution.value = attributes[2];
-        player.stats.wisdom.value = attributes[3];
+        // player.stats.strength.value = attributes[0];
+        // player.stats.dexterity.value = attributes[1];
+        // player.stats.constitution.value = attributes[2];
+        // player.stats.wisdom.value = attributes[3];
 
-        player.stats.maxHitPoints = 8 + player.stats.constitution.getModifier();
-        player.stats.hitPoints = player.stats.maxHitPoints;
-        player.stats.attackBonus = 1;
+        // player.stats.maxHitPoints = 8 + player.stats.constitution.getModifier();
+        // player.stats.hitPoints = player.stats.maxHitPoints;
+        // player.stats.attackBonus = 1;
 
-        player.stats.frayDie.numberOf = 1;
-        player.stats.frayDie.sides = 8;
+        // player.stats.frayDie = {numberOf: 1, sides: 8};
 
-        ServiceLocator.getMessageLog().addMessages(`${player.describe()} ${player.stats.hitPoints}/${player.stats.maxHitPoints} AC ${player.getArmorClass()} STR ${player.stats.strength.value}(${player.stats.strength.getModifier()}) DEX ${player.stats.dexterity.value}(${player.stats.dexterity.getModifier()}) CON ${player.stats.constitution.value}(${player.stats.constitution.getModifier()}) WIS ${player.stats.wisdom.value}(${player.stats.wisdom.getModifier()})`);
+        // ServiceLocator.getMessageLog().addMessages(`${player.describe()} ${player.stats.hitPoints}/${player.stats.maxHitPoints} AC ${player.getArmorClass()} STR ${player.stats.strength.value}(${player.stats.strength.getModifier()}) DEX ${player.stats.dexterity.value}(${player.stats.dexterity.getModifier()}) CON ${player.stats.constitution.value}(${player.stats.constitution.getModifier()}) WIS ${player.stats.wisdom.value}(${player.stats.wisdom.getModifier()})`);
 
-        return player;
+        // return player;
+        return undefined;
     }
 
     static createCreature(): Creature {

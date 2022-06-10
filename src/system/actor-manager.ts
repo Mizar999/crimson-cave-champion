@@ -1,21 +1,19 @@
 import { Scheduler } from "rot-js/lib/index";
 import Speed from "rot-js/lib/scheduler/speed";
-import { Actor, ActorType } from "../actor/actor";
-import { Creature } from "../actor/creature";
-import { Player } from "../actor/player";
+import { Actor, ActorController, ActorType } from "../actor/actor";
 
 export class ActorManager {
     private static scheduler: Speed;
-    private static actors: Actor[];
+    private static actorControllers: ActorController[];
 
     static initialize(): void {
         ActorManager.scheduler = new Scheduler.Speed();
-        ActorManager.actors = [];
+        ActorManager.actorControllers = [];
     }
 
-    static add(actor: Actor, repeat: boolean = true): void {
-        ActorManager.scheduler.add(actor, repeat);
-        ActorManager.actors.push(actor);
+    static add(controller: ActorController, repeat: boolean = true): void {
+        ActorManager.scheduler.add(controller, repeat);
+        ActorManager.actorControllers.push(controller);
     }
 
     static next(): Actor {
@@ -23,9 +21,9 @@ export class ActorManager {
     }
 
     static getActor(filter: (actor: Actor) => boolean): Actor {
-        for(let actor of ActorManager.actors) {
-            if (filter(actor)) {
-                return actor;
+        for(let controller of ActorManager.actorControllers) {
+            if (filter(controller.actor)) {
+                return controller.actor;
             }
         }
 
@@ -34,9 +32,9 @@ export class ActorManager {
 
     static getActors(filter: (actor: Actor) => boolean): Actor[] {
         let result: Actor[] = [];
-        for(let actor of ActorManager.actors) {
-            if (filter(actor)) {
-                result.push(actor);
+        for(let controller of ActorManager.actorControllers) {
+            if (filter(controller.actor)) {
+                result.push(controller.actor);
             }
         }
 
