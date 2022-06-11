@@ -1,8 +1,7 @@
 import { RNG } from "rot-js";
-import { Actor, ActorType, SavingThrowType } from "../actor/actor";
-import { Creature } from "../actor/creature";
-import { Player } from "../actor/player";
-import { Attribute } from "../actor/player-stats";
+import { Actor, ActorController, ActorType, SavingThrowType } from "../actor/actor";
+import { Creature, CreatureController } from "../actor/creature";
+import { Player, PlayerController } from "../actor/player";
 import { Dice, DiceResult, DiceValue } from "../util/dice";
 import { Attack } from "./attack";
 import { ServiceLocator } from "./service-locator";
@@ -15,21 +14,24 @@ export class SystemManager {
     static attack(attacker: Actor, target: Actor, attacks: Attack[]): void {
         let life: number;
         let targetLevel: number;
+        let targetController: ActorController;
         switch (target.type) {
-            case ActorType.Player:
-                let stats = (<Player>target).stats;
-                life = stats.hitPoints;
-                targetLevel = stats.level;
+            case "Player":
+                let player = <Player>target;
+                life = player.hitPoints;
+                targetLevel = player.level;
+                targetController = new PlayerController(player);
                 break;
-            case ActorType.Creature:
+            case "Creature":
                 let creature = <Creature>target;
                 life = creature.hitDice;
-                targetLevel = creature.breed.maxHitDice;
+                targetLevel = creature.maxHitDice;
+                targetController = new CreatureController(creature);
                 break;
         }
 
         if (life <= 0) {
-            ServiceLocator.getMessageLog().addMessages(`${target.describe()} is already defeated`);
+            ServiceLocator.getMessageLog().addMessages(`${targetController.describe()} is already defeated`);
             return;
         }
 
@@ -40,8 +42,8 @@ export class SystemManager {
             let hit = false;
             
             if (attack.isFrayDie) {
-                if (attacker.type === ActorType.Player && targetLevel) {
-                    hit = (<Player>attacker).stats.level >= targetLevel;
+                if (attacker.type === "Player" && targetLevel) {
+                    hit = (<Player>attacker).level >= targetLevel;
                 }
             } else {
                 let diceResult = Dice.roll(this.attackDice).result;
@@ -49,7 +51,7 @@ export class SystemManager {
 
                 hit = diceResult >= 20;
                 if (!hit && diceResult > 1) {
-                    let attackRoll = (diceResult + attack.attackBonus + target.getArmorClass());
+                    let attackRoll = (diceResult + attack.attackBonus + targetController.getArmorClass());
                     nextResult.attackRoll = attackRoll;
                     hit = attackRoll >= 20;
                 }
@@ -66,10 +68,10 @@ export class SystemManager {
                 }
 
                 switch (target.type) {
-                    case ActorType.Player:
-                        (<Player>target).stats.hitPoints = life;
+                    case "Player":
+                        (<Player>target).hitPoints = life;
                         break;
-                    case ActorType.Creature:
+                    case "Creature":
                         (<Creature>target).hitDice = life;
                         break;
                 }
@@ -106,10 +108,11 @@ export class SystemManager {
         });
 
         let prefix: string;
-        if (attacker.type == ActorType.Player) {
-            prefix = `You attack ${target.describe()}`;
+        if (attacker.type == "Player") {
+            prefix = `You attack ${targetController.describe()}`;
         } else {
-            prefix = `${attacker.describe()} attacks you`;
+
+            prefix = `${new CreatureController(<Creature>attacker).describe()} attacks you`;
         }
 
         ServiceLocator.getMessageLog().addMessages(`${prefix} for ${totalDamage} damage [${result}]`);
@@ -149,31 +152,31 @@ export class SystemManager {
         // TODO Traps
         let difficulty = 9;
         switch (source.type) {
-            case ActorType.Player:
-                difficulty += (<Player>source).stats.level;
+            case "Player":
+                difficulty += (<Player>source).level;
                 break;
-            case ActorType.Creature:
+            case "Creature":
                 difficulty += (<Creature>source).hitDice;
                 break;
         }
 
         let modifier = 0;
         switch (target.type) {
-            case ActorType.Player:
+            case "Player":
                 let player = <Player>target;
                 switch (savingThrowType) {
-                    case SavingThrowType.Resist:
-                        modifier += player.stats.constitution.getModifier();
-                    case SavingThrowType.Dodge:
-                        modifier += player.stats.dexterity.getModifier();
-                    case SavingThrowType.Dispel:
-                        modifier += player.stats.wisdom.getModifier();
+                    case "Resist":
+                        modifier += PlayerController.getAttributeModifier(player.constitution);
+                    case "Dodge":
+                        modifier += PlayerController.getAttributeModifier(player.dexterity);
+                    case "Dispel":
+                        modifier += PlayerController.getAttributeModifier(player.wisdom);
                 }
                 break;
-            case ActorType.Creature:
+            case "Creature":
                 let creature = <Creature>target;
-                if (creature.breed.savingThrows.indexOf(savingThrowType) > -1) {
-                    modifier += creature.breed.skillBonus;
+                if (creature.savingThrows.indexOf(savingThrowType) > -1) {
+                    modifier += creature.skillBonus;
                 }
                 break;
         }
@@ -184,7 +187,7 @@ export class SystemManager {
     static getAttributes(quantity: number): number[] {
         let result: number[];
         let maxTries = 10;
-        let attribute = new Attribute();
+        let attribute: number;
         let maxModifier: number;
 
         do {
@@ -193,9 +196,9 @@ export class SystemManager {
             --maxTries;
 
             for (let i = 0; i < quantity; ++i) {
-                attribute.value = this.resultWithoutLowest(Dice.roll(this.attributeDice));
-                maxModifier += attribute.getModifier();
-                result.push(attribute.value);
+                attribute = this.resultWithoutLowest(Dice.roll(this.attributeDice));
+                maxModifier += PlayerController.getAttributeModifier(attribute);
+                result.push(attribute);
             }
         } while (maxTries > 0 && maxModifier < 0);
 

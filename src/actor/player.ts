@@ -53,6 +53,10 @@ export class PlayerController extends ActorController {
         return this.command;
     }
 
+    getActor(): Actor {
+        return this.player;
+    }
+
     getSpeed(): number {
         return this.player.speed;
     }

@@ -41,6 +41,10 @@ export class CreatureController extends ActorController {
         return new DebugLogCommand('Could not find player!');
     }
 
+    getActor(): Actor {
+        return this.creature;
+    }
+
     getArmorClass(): number {
         return (this.creature.body.armorClass || 0) + this.creature.body.armorClassModifier;
     }

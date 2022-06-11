@@ -21,6 +21,12 @@ export abstract class ActorController {
         return new Command();
     }
 
+    onBeforeTurn(game: Game): void { }
+    
+    onAfterTurn(game: Game): void { }
+
+    abstract getActor(): Actor;
+
     abstract getSpeed(): number;
 
     abstract getArmorClass(): number;

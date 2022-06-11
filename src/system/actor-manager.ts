@@ -16,14 +16,14 @@ export class ActorManager {
         ActorManager.actorControllers.push(controller);
     }
 
-    static next(): Actor {
+    static next(): ActorController {
         return ActorManager.scheduler.next();
     }
 
     static getActor(filter: (actor: Actor) => boolean): Actor {
         for(let controller of ActorManager.actorControllers) {
-            if (filter(controller.actor)) {
-                return controller.actor;
+            if (filter(controller.getActor())) {
+                return controller.getActor();
             }
         }
 
@@ -33,8 +33,8 @@ export class ActorManager {
     static getActors(filter: (actor: Actor) => boolean): Actor[] {
         let result: Actor[] = [];
         for(let controller of ActorManager.actorControllers) {
-            if (filter(controller.actor)) {
-                result.push(controller.actor);
+            if (filter(controller.getActor())) {
+                result.push(controller.getActor());
             }
         }
 

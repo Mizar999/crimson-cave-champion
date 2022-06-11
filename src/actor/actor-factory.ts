@@ -1,11 +1,11 @@
 import { SystemManager } from "../system/system-manager";
 import { Player, PlayerController } from "./player";
-import { Creature } from "./creature";
+import { Creature, CreatureController } from "./creature";
 import { Attack } from "../system/attack";
 import { BodyData } from "../body/body-data";
 
 export class ActorFactory {
-    static createPlayer(): Player {
+    static createPlayer(): PlayerController {
         let attributes: number[] = SystemManager.getAttributes(4);
         const player = new Player({
             strength: attributes[0],
@@ -20,13 +20,12 @@ export class ActorFactory {
             })
         });
 
-        return player;
+        return new PlayerController(player);
     }
 
-    static createCreature(): Creature {
+    static createCreature(): CreatureController {
         const attack = new Attack({ damage: { numberOf: 1, sides: 6 }, attackBonus: 6 });
-
-        return new Creature({
+        const creature = new Creature({
             name: "Kappa",
             maxHitDice: 6,
             body: new BodyData({
@@ -34,5 +33,6 @@ export class ActorFactory {
                 naturalAttacks: [{ weight: 1, attacks: [attack, attack] }]
             })
         });
+        return new CreatureController(creature);
     }
 }

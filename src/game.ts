@@ -5,7 +5,7 @@ import { MessageLog } from "./ui/messsage-log";
 import { ServiceLocator } from "./system/service-locator";
 import { ActorFactory } from "./actor/actor-factory";
 import { InputUtility } from "./util/input-utility";
-import { Actor } from "./actor/actor";
+import { Actor, ActorController } from "./actor/actor";
 import { Command, CommandResult } from "./command/command";
 import { ActorManager } from "./system/actor-manager";
 
@@ -28,25 +28,25 @@ export class Game {
     }
 
     private async mainLoop(): Promise<void> {
-        let actor: Actor;
+        let actorController: ActorController;
         let command: Command;
         let commandResult: CommandResult;
 
         while (true) {
             if (!commandResult || commandResult.finished) {
-                if (actor) {
-                    actor.onAfterTurn(this);
+                if (actorController) {
+                    actorController.onAfterTurn(this);
                 }
 
-                actor = ActorManager.next();
+                actorController = ActorManager.next();
 
-                if (!actor) {
+                if (!actorController) {
                     break;
                 }
-                actor.onBeforeTurn(this);
+                actorController.onBeforeTurn(this);
             }
 
-            command = await actor.takeTurn(this);
+            command = await actorController.takeTurn(this);
             commandResult = await command.execute(this);
             if (commandResult.message) {
                 ServiceLocator.getMessageLog().addMessages(commandResult.message);
