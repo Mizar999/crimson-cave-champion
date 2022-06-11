@@ -3,6 +3,7 @@ import { Player, PlayerController } from "./player";
 import { Creature, CreatureController } from "./creature";
 import { Attack } from "../system/attack";
 import { BodyData } from "../body/body-data";
+import { ServiceLocator } from "../system/service-locator";
 
 export class ActorFactory {
     static createPlayer(): PlayerController {
@@ -20,7 +21,9 @@ export class ActorFactory {
             })
         });
 
-        return new PlayerController(player);
+        const controller = new PlayerController(player);
+        ServiceLocator.getMessageLog().addMessages(`HP ${player.hitPoints}/${player.maxHitPoints} AC ${controller.getArmorClass()} STR ${player.strength}(${PlayerController.getAttributeModifier(player.strength)}) DEX ${player.dexterity}(${PlayerController.getAttributeModifier(player.dexterity)}) CON ${player.constitution}(${PlayerController.getAttributeModifier(player.constitution)}) WIS ${player.wisdom}(${PlayerController.getAttributeModifier(player.wisdom)})`);
+        return controller;
     }
 
     static createCreature(): CreatureController {
