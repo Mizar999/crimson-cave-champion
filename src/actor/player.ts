@@ -20,7 +20,6 @@ export class Player extends Actor {
     constitution: number;
     wisdom: number;
     attackBonus: number;
-    frayDie: DiceValue;
     body: BodyData;
 
     constructor(params: Partial<Player> = {}) {
@@ -35,7 +34,6 @@ export class Player extends Actor {
         this.constitution = params.constitution || 0;
         this.wisdom = params.wisdom || 0;
         this.attackBonus = params.attackBonus || 0;
-        this.frayDie = params.frayDie || { numberOf: 0, sides: 1 };
         this.body = params.body || new BodyData();
     }
 }

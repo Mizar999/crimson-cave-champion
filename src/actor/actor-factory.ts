@@ -14,9 +14,9 @@ export class ActorFactory {
             wisdom: attributes[3],
             maxHitPoints: 8 + PlayerController.getAttributeModifier(attributes[2]),
             attackBonus: 1,
-            frayDie: { numberOf: 1, sides: 8 },
             body: new BodyData({
-                naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }]
+                naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }],
+                additionalAttacks: [new Attack({ damage: { numberOf: 1, sides: 8 }, isFrayDie: true })]
             })
         });
 

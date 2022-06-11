@@ -1,11 +1,8 @@
-import { Scheduler } from "rot-js/lib/index";
-import Speed from "rot-js/lib/scheduler/speed";
-
 import { MessageLog } from "./ui/messsage-log";
 import { ServiceLocator } from "./system/service-locator";
 import { ActorFactory } from "./actor/actor-factory";
 import { InputUtility } from "./util/input-utility";
-import { Actor, ActorController } from "./actor/actor";
+import { ActorController } from "./actor/actor";
 import { Command, CommandResult } from "./command/command";
 import { ActorManager } from "./system/actor-manager";
 
