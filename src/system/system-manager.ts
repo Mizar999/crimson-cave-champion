@@ -1,5 +1,5 @@
 import { RNG } from "rot-js";
-import { Actor, ActorController, ActorType, SavingThrowType } from "../actor/actor";
+import { Actor, ActorController, SavingThrowType } from "../actor/actor";
 import { Creature, CreatureController } from "../actor/creature";
 import { Player, PlayerController } from "../actor/player";
 import { Dice, DiceResult, DiceValue } from "../util/dice";

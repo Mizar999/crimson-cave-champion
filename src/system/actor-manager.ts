@@ -1,6 +1,6 @@
 import { Scheduler } from "rot-js/lib/index";
 import Speed from "rot-js/lib/scheduler/speed";
-import { Actor, ActorController, ActorType } from "../actor/actor";
+import { Actor, ActorController } from "../actor/actor";
 
 export class ActorManager {
     private static scheduler: Speed;

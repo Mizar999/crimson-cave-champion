@@ -1,7 +1,6 @@
 import { Actor, ActorController } from "./actor";
 import { Visual } from "../ui/visual";
 import { BodyController, BodyData } from "../body/body-data";
-import { DiceValue } from "../util/dice";
 import { Command } from "../command/command";
 import { Game } from "../game";
 import { ActorManager } from "../system/actor-manager";
