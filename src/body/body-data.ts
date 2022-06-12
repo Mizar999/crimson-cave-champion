@@ -1,14 +1,18 @@
 import { RNG } from "rot-js";
 
 import { Attack } from "../system/attack";
-import { Item } from "../item/item";
+import { Item, ItemController } from "../item/item";
 
 export type EquipmentType = "hand" | "finger" | "Body" | "neck";
+
+export class Equipment {
+    constructor(public type: EquipmentType, public items: Item[] = [], public maximum: number = 1) { }
+}
 
 export class BodyData {
     armorClass: number | undefined;
     armorClassModifier: number;
-    equipment: { type: EquipmentType, items: Item[], maximum: number }[];
+    equipment: Equipment[];
     naturalAttacks: { weight: number, attacks: Attack[] }[];
     additionalAttacks: Attack[];
 
@@ -22,20 +26,32 @@ export class BodyData {
 }
 
 export class BodyController {
-    static getAttacks(body: BodyData): Attack[] {
+    constructor(public body: BodyData) { }
+
+    getAttacks(): Attack[] {
         const result: Attack[] = [];
 
-        if (result.length == 0 && body.naturalAttacks && body.naturalAttacks.length > 0) {
-            const data = body.naturalAttacks.reduce((previous, current, index) => ({
+        if (this.body.equipment && this.body.equipment.length > 0) {
+            const equipment = this.body.equipment.find(value => value.type == "hand");
+            if (equipment) {
+                let item = equipment.items.find(item => item.type == "weapon");
+                if (item) {
+                    result.push(...ItemController.getAttacks(item));
+                }
+            }
+        }
+
+        if (result.length == 0 && this.body.naturalAttacks && this.body.naturalAttacks.length > 0) {
+            const data = this.body.naturalAttacks.reduce((previous, current, index) => ({
                 ...previous,
                 [index]: current.weight
             }), {});
 
-            result.push(...body.naturalAttacks[RNG.getWeightedValue(data)].attacks);
+            result.push(...this.body.naturalAttacks[RNG.getWeightedValue(data)].attacks);
         }
 
-        if (body.additionalAttacks) {
-            result.push(...body.additionalAttacks);
+        if (this.body.additionalAttacks) {
+            result.push(...this.body.additionalAttacks);
         }
 
         return result;

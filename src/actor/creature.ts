@@ -28,15 +28,18 @@ export class Creature extends Actor {
 }
 
 export class CreatureController extends ActorController {
+    private bodyController: BodyController;
+
     constructor(public creature: Creature) {
         super();
+        this.bodyController = new BodyController(creature.body);
     }
 
     async takeTurn(game: Game): Promise<Command> {
         // TODO add AI
         let player = ActorManager.getActor((actor) => actor.type == "player");
         if (player) {
-            return new AttackCommand(this.creature, player, BodyController.getAttacks(this.creature.body));
+            return new AttackCommand(this.creature, player, this.bodyController.getAttacks());
         }
         return new DebugLogCommand('Could not find player!');
     }

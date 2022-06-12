@@ -39,9 +39,11 @@ export class Player extends Actor {
 
 export class PlayerController extends ActorController {
     private command: Command;
+    private bodyController: BodyController;
 
     constructor(public player: Player) {
         super();
+        this.bodyController = new BodyController(player.body);
     }
     
     async takeTurn(game: Game): Promise<Command> {
@@ -93,7 +95,7 @@ export class PlayerController extends ActorController {
         let creature = ActorManager.getActor((actor) => actor.type == "creature");
 
         if (creature) {
-            let attacks: Attack[] = BodyController.getAttacks(this.player.body);
+            let attacks: Attack[] = this.bodyController.getAttacks();
             this.command = new AttackCommand(this.player, creature, attacks);
         } else {
             this.command = new DebugLogCommand('Could not find creature!');

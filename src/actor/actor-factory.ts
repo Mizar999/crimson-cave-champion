@@ -2,8 +2,9 @@ import { SystemManager } from "../system/system-manager";
 import { Player, PlayerController } from "./player";
 import { Creature, CreatureController } from "./creature";
 import { Attack } from "../system/attack";
-import { BodyData } from "../body/body-data";
+import { BodyData, Equipment } from "../body/body-data";
 import { ServiceLocator } from "../system/service-locator";
+import { Weapon } from "../item/item";
 
 export class ActorFactory {
     static createPlayer(): PlayerController {
@@ -16,6 +17,9 @@ export class ActorFactory {
             maxHitPoints: 8 + PlayerController.getAttributeModifier(attributes[2]),
             attackBonus: 1,
             body: new BodyData({
+                equipment: [new Equipment("hand", [
+                    new Weapon("Sword", [new Attack({ damage: { numberOf: 1, sides: 8 } })])
+                ], 2)],
                 naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }],
                 additionalAttacks: [new Attack({ damage: { numberOf: 1, sides: 8 }, isFrayDie: true })]
             })

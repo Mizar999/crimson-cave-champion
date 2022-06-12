@@ -2,17 +2,46 @@ import { Attack } from "../system/attack";
 import { Actor } from "../actor/actor";
 import { Entity } from "../ui/entity";
 
-export type SlotType = "None" | "MainHand" | "OffHand" | "TwoHand" | "Armor" | "Ring";
+export type ItemType = "weapon" | "armor" | "shield" | "ring" | "amulet" | "potion" | "scroll";
+
+export type Flag = "throwable" | "usable" | "twohanded";
 
 export class Item {
-    private name: string;
-    private slot: SlotType;
-    private attacks: Attack[];
-    private armorClass: number;
-    private armorClassModifier: number;
-    private weight: number;
-    private throwRange: number;
     // Use, throw, effect?
+    constructor(public type: ItemType, public name: string, public flags: Flag[] = []) { }
+}
+
+export class Weapon extends Item {
+    constructor(name: string, public attacks: Attack[] = [], flags: Flag[] = [],) {
+        super("weapon", name, flags);
+    }
+}
+
+export class ItemController {
+    static describe(item: Item): string {
+        return item.name;
+    }
+
+    static getAttacks(item: Item): Attack[] {
+        switch (item.type) {
+            case "weapon":
+                return (<Weapon>item).attacks;
+            default:
+                return [];
+        }
+    }
+
+    static getArmorClass(item: Item): number | undefined {
+        return undefined;
+    }
+
+    static getArmorClassModifier(item: Item): number {
+        return 0;
+    }
+
+    static use(item: Item): void { }
+
+    static throw(item: Item): void { }
 }
 
 // TODO implement classes
