@@ -22,7 +22,7 @@ export class Player extends Actor {
     body: BodyData;
 
     constructor(params: Partial<Player> = {}) {
-        super("Player", (params.visual || new Visual("@", "white")), params.speed, params.point);
+        super("player", (params.visual || new Visual("@", "white")), params.speed, params.point);
 
         this.maxHitPoints = params.maxHitPoints || 1;
         this.hitPoints = params.hitPoints || this.maxHitPoints;
@@ -90,7 +90,7 @@ export class PlayerController extends ActorController {
     }
 
     private handleInput(event: KeyboardEvent): boolean {
-        let creature = ActorManager.getActor((actor) => actor.type == "Creature");
+        let creature = ActorManager.getActor((actor) => actor.type == "creature");
 
         if (creature) {
             let attacks: Attack[] = BodyController.getAttacks(this.player.body);

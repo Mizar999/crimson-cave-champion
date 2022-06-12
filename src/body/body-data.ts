@@ -3,7 +3,7 @@ import { RNG } from "rot-js";
 import { Attack } from "../system/attack";
 import { Item } from "../item/item";
 
-export type EquipmentType = "Hand" | "Finger" | "Body" | "Neck";
+export type EquipmentType = "hand" | "finger" | "Body" | "neck";
 
 export class BodyData {
     armorClass: number | undefined;

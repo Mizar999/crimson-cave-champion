@@ -4,9 +4,9 @@ import { Entity } from "../ui/entity";
 import { Visual } from "../ui/visual";
 import { Point } from "../util/point";
 
-export type ActorType = "Player" | "Creature";
+export type ActorType = "player" | "creature";
 
-export type SavingThrowType = "Resist" | "Dodge" | "Dispel";
+export type SavingThrowType = "resist" | "dodge" | "dispel";
 
 export abstract class Actor extends Entity {
     constructor(public type: ActorType, public visual: Visual, public speed: number = ActorController.defaultSpeed, public point: Point = { x: 0, y: 0 }) {

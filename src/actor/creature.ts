@@ -16,7 +16,7 @@ export class Creature extends Actor {
     body: BodyData;
 
     constructor(params: Partial<Creature> = {}) {
-        super("Creature", (params.visual || new Visual("?", "red", "white")), params.speed, params.point);
+        super("creature", (params.visual || new Visual("?", "red", "white")), params.speed, params.point);
 
         this.name = params.name || "Unknown Creature";
         this.maxHitDice = params.maxHitDice || 1;
@@ -34,7 +34,7 @@ export class CreatureController extends ActorController {
 
     async takeTurn(game: Game): Promise<Command> {
         // TODO add AI
-        let player = ActorManager.getActor((actor) => actor.type == "Player");
+        let player = ActorManager.getActor((actor) => actor.type == "player");
         if (player) {
             return new AttackCommand(this.creature, player, BodyController.getAttacks(this.creature.body));
         }

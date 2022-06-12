@@ -16,13 +16,13 @@ export class SystemManager {
         let targetLevel: number;
         let targetController: ActorController;
         switch (target.type) {
-            case "Player":
+            case "player":
                 let player = <Player>target;
                 life = player.hitPoints;
                 targetLevel = player.level;
                 targetController = new PlayerController(player);
                 break;
-            case "Creature":
+            case "creature":
                 let creature = <Creature>target;
                 life = creature.hitDice;
                 targetLevel = creature.maxHitDice;
@@ -42,7 +42,7 @@ export class SystemManager {
             let hit = false;
             
             if (attack.isFrayDie) {
-                if (attacker.type === "Player" && targetLevel) {
+                if (attacker.type === "player" && targetLevel) {
                     hit = (<Player>attacker).level >= targetLevel;
                 }
             } else {
@@ -68,10 +68,10 @@ export class SystemManager {
                 }
 
                 switch (target.type) {
-                    case "Player":
+                    case "player":
                         (<Player>target).hitPoints = life;
                         break;
-                    case "Creature":
+                    case "creature":
                         (<Creature>target).hitDice = life;
                         break;
                 }
@@ -108,7 +108,7 @@ export class SystemManager {
         });
 
         let prefix: string;
-        if (attacker.type == "Player") {
+        if (attacker.type == "player") {
             prefix = `You attack ${targetController.describe()}`;
         } else {
 
@@ -152,28 +152,28 @@ export class SystemManager {
         // TODO Traps
         let difficulty = 9;
         switch (source.type) {
-            case "Player":
+            case "player":
                 difficulty += (<Player>source).level;
                 break;
-            case "Creature":
+            case "creature":
                 difficulty += (<Creature>source).hitDice;
                 break;
         }
 
         let modifier = 0;
         switch (target.type) {
-            case "Player":
+            case "player":
                 let player = <Player>target;
                 switch (savingThrowType) {
-                    case "Resist":
+                    case "resist":
                         modifier += PlayerController.getAttributeModifier(player.constitution);
-                    case "Dodge":
+                    case "dodge":
                         modifier += PlayerController.getAttributeModifier(player.dexterity);
-                    case "Dispel":
+                    case "dispel":
                         modifier += PlayerController.getAttributeModifier(player.wisdom);
                 }
                 break;
-            case "Creature":
+            case "creature":
                 let creature = <Creature>target;
                 if (creature.savingThrows.indexOf(savingThrowType) > -1) {
                     modifier += creature.skillBonus;
