@@ -4,7 +4,7 @@ import { Entity } from "../ui/entity";
 
 export type ItemType = "weapon" | "armor" | "shield" | "ring" | "amulet" | "potion" | "scroll";
 
-export type Flag = "throwable" | "usable" | "twohanded";
+export type Flag = "throwable" | "usable" | "twohanded" | "cursed";
 
 export class Item {
     // Use, throw, effect?
@@ -14,6 +14,18 @@ export class Item {
 export class Weapon extends Item {
     constructor(name: string, public attacks: Attack[] = [], flags: Flag[] = [],) {
         super("weapon", name, flags);
+    }
+}
+
+export class Armor extends Item {
+    constructor(name: string, public armorClass: number = undefined, flags: Flag[] = []) {
+        super("armor", name, flags);
+    }
+}
+
+export class Shield extends Item {
+    constructor(name: string, public armorClassModifier: number = 0, flags: Flag[] = []) {
+        super("shield", name, flags);
     }
 }
 
@@ -32,11 +44,21 @@ export class ItemController {
     }
 
     static getArmorClass(item: Item): number | undefined {
-        return undefined;
+        switch (item.type) {
+            case "armor":
+                return (<Armor>item).armorClass;
+            default:
+                return undefined;
+        }
     }
 
     static getArmorClassModifier(item: Item): number {
-        return 0;
+        switch (item.type) {
+            case "shield":
+                return (<Shield>item).armorClassModifier;
+            default:
+                return undefined;
+        }
     }
 
     static use(item: Item): void { }

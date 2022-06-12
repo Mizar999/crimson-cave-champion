@@ -1,9 +1,9 @@
 import { RNG } from "rot-js";
 
 import { Attack } from "../system/attack";
-import { Item, ItemController } from "../item/item";
+import { ItemController, Item, Shield } from "../item/item";
 
-export type EquipmentType = "hand" | "finger" | "Body" | "neck";
+export type EquipmentType = "hand" | "finger" | "body" | "neck";
 
 export class Equipment {
     constructor(public type: EquipmentType, public items: Item[] = [], public maximum: number = 1) { }
@@ -26,13 +26,11 @@ export class BodyData {
 }
 
 export class BodyController {
-    constructor(public body: BodyData) { }
-
-    getAttacks(): Attack[] {
+    static getAttacks(body: BodyData): Attack[] {
         const result: Attack[] = [];
 
-        if (this.body.equipment && this.body.equipment.length > 0) {
-            const equipment = this.body.equipment.find(value => value.type == "hand");
+        if (body.equipment && body.equipment.length > 0) {
+            const equipment = body.equipment.find(value => value.type == "hand");
             if (equipment) {
                 let item = equipment.items.find(item => item.type == "weapon");
                 if (item) {
@@ -41,19 +39,54 @@ export class BodyController {
             }
         }
 
-        if (result.length == 0 && this.body.naturalAttacks && this.body.naturalAttacks.length > 0) {
-            const data = this.body.naturalAttacks.reduce((previous, current, index) => ({
+        if (result.length == 0 && body.naturalAttacks && body.naturalAttacks.length > 0) {
+            const data = body.naturalAttacks.reduce((previous, current, index) => ({
                 ...previous,
                 [index]: current.weight
             }), {});
 
-            result.push(...this.body.naturalAttacks[RNG.getWeightedValue(data)].attacks);
+            result.push(...body.naturalAttacks[RNG.getWeightedValue(data)].attacks);
         }
 
-        if (this.body.additionalAttacks) {
-            result.push(...this.body.additionalAttacks);
+        if (body.additionalAttacks) {
+            result.push(...body.additionalAttacks);
         }
 
         return result;
+    }
+
+    static equip(body: BodyData, item: Item): boolean {
+        let equipped = false;
+        let equipmentType: EquipmentType;
+
+        switch (item.type) {
+            case "weapon":
+            case "shield":
+                equipmentType = "hand";
+                break;
+            case "armor":
+                equipmentType = "body";
+                break;
+            case "ring":
+                equipmentType = "finger";
+                break;
+            case "amulet":
+                equipmentType = "neck";
+                break;
+            default:
+                return equipped;
+        }
+
+        const equipment = body.equipment.find(value => value.type == equipmentType);
+        if (equipment) {
+            const remainingSlots = equipment.items.reduce<number>((previous, current) => previous - (current.flags.indexOf("twohanded") > -1 ? 2 : 1), equipment.maximum);
+            const isTwoHanded = item.flags.indexOf("twohanded") > -1;
+            if ((isTwoHanded && remainingSlots >= 2) || (!isTwoHanded && remainingSlots > 0)) {
+                equipment.items.push(item);
+                equipped = true;
+            }
+        }
+
+        return equipped;
     }
 }
