@@ -5,6 +5,7 @@ import { Attack } from "../system/attack";
 import { BodyController, BodyData, Equipment, HumanoidEquipment } from "../body/body-data";
 import { ServiceLocator } from "../system/service-locator";
 import { Armor, Shield, Weapon } from "../item/item";
+import {Cloner} from "../util/Cloner";
 
 export class ActorFactory {
     static createPlayer(): PlayerController {
@@ -20,7 +21,7 @@ export class ActorFactory {
             maxHitPoints: 8 + PlayerController.getAttributeModifier(attributes[2]),
             attackBonus: 1,
             body: new BodyData({
-                equipment: humanoidCopy,
+                equipment: Cloner.clone(humanoidCopy),
                 naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }],
                 additionalAttacks: [new Attack({ damage: { numberOf: 1, sides: 8 }, isFrayDie: true })]
             })
