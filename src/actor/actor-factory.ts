@@ -10,8 +10,6 @@ import {Cloner} from "../util/Cloner";
 export class ActorFactory {
     static createPlayer(): PlayerController {
         const attributes: number[] = SystemManager.getAttributes(4);
-        const humanoidCopy: Equipment[] = [];
-        HumanoidEquipment.forEach(value => humanoidCopy.push({...value})); // TODO how to copy?
 
         const player = new Player({
             strength: attributes[0],
@@ -21,7 +19,7 @@ export class ActorFactory {
             maxHitPoints: 8 + PlayerController.getAttributeModifier(attributes[2]),
             attackBonus: 1,
             body: new BodyData({
-                equipment: Cloner.clone(humanoidCopy),
+                equipment: Cloner.clone(HumanoidEquipment),
                 naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }],
                 additionalAttacks: [new Attack({ damage: { numberOf: 1, sides: 8 }, isFrayDie: true })]
             })
