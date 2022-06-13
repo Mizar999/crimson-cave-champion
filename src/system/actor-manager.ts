@@ -18,7 +18,6 @@ export class ActorManager {
 
     static next(): ActorController {
         const actorController = ActorManager.scheduler.next();
-        console.log(actorController);
         return actorController;
     }
 

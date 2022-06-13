@@ -25,11 +25,9 @@ export class ActorFactory {
             })
         });
 
-        console.log(HumanoidEquipment);
         BodyController.equip(player.body, this.createWeapon());
         BodyController.equip(player.body, this.createArmor());
         BodyController.equip(player.body, this.createShield());
-        console.log(HumanoidEquipment);
 
         const controller = new PlayerController(player);
         ServiceLocator.getMessageLog().addMessages(`HP ${player.hitPoints}/${player.maxHitPoints} AC ${controller.getArmorClass()} STR ${player.strength}(${PlayerController.getAttributeModifier(player.strength)}) DEX ${player.dexterity}(${PlayerController.getAttributeModifier(player.dexterity)}) CON ${player.constitution}(${PlayerController.getAttributeModifier(player.constitution)}) WIS ${player.wisdom}(${PlayerController.getAttributeModifier(player.wisdom)})`);

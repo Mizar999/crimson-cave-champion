@@ -121,17 +121,14 @@ export class BodyController {
         }
 
         const equipment = body.equipment.find(value => value.type == equipmentType);
-        console.log(equipment, equipped);
         if (equipment) {
             const remainingSlots = equipment.items.reduce<number>((previous, current) => previous - (current.flags.indexOf("twohanded") > -1 ? 2 : 1), equipment.maximum);
             const isTwoHanded = item.flags.indexOf("twohanded") > -1;
-            console.log(remainingSlots, isTwoHanded);
             if ((isTwoHanded && remainingSlots >= 2) || (!isTwoHanded && remainingSlots > 0)) {
                 equipment.items.push(item);
                 equipped = true;
             }
         }
-        console.log(equipment, equipped);
 
         return equipped;
     }

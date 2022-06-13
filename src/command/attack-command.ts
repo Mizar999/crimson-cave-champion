@@ -10,7 +10,6 @@ export class AttackCommand extends Command {
     }
 
     execute(game: Game): Promise<CommandResult> {
-        console.log(this.attacks);
         SystemManager.attack(this.attacker, this.blocker, this.attacks);
         return this.finished();
     }
