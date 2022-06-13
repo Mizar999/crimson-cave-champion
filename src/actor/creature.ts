@@ -46,7 +46,13 @@ export class CreatureController extends ActorController {
     }
 
     getArmorClass(): number {
-        return (this.creature.body.armorClass || 0) + this.creature.body.armorClassModifier;
+        let armorClass = BodyController.getArmorClass(this.creature.body);
+
+        if (armorClass === undefined) {
+            armorClass = this.creature.body.armorClass;
+        }
+
+        return (armorClass || 0) + BodyController.getArmorClassModifier(this.creature.body) + this.creature.body.armorClassModifier;
     }
 
     getSpeed(): number {

@@ -1,7 +1,7 @@
 import { RNG } from "rot-js";
 
 import { Attack } from "../system/attack";
-import { ItemController, Item, Shield } from "../item/item";
+import { ItemController, Item, Shield, Armor } from "../item/item";
 
 export type EquipmentType = "hand" | "finger" | "body" | "neck";
 
@@ -24,6 +24,13 @@ export class BodyData {
         this.additionalAttacks = params.additionalAttacks || [];
     }
 }
+
+export const HumanoidEquipment: Equipment[] = [
+    { type: "hand", items: [], maximum: 2 },
+    { type: "finger", items: [], maximum: 2 },
+    { type: "body", items: [], maximum: 1 },
+    { type: "neck", items: [], maximum: 1 }
+];
 
 export class BodyController {
     static getAttacks(body: BodyData): Attack[] {
@@ -55,6 +62,42 @@ export class BodyController {
         return result;
     }
 
+    static getArmorClass(body: BodyData): number | undefined {
+        let armorClass = undefined;
+
+        const equipment = body.equipment.find(value => value.type == "body");
+        if (equipment) {
+            equipment.items.forEach(value => {
+                let armor = <Armor>value;
+                if (armor.armorClass !== undefined) {
+                    if (armorClass === undefined) {
+                        armorClass = armor.armorClass;
+                    } else {
+                        armorClass = Math.min(armorClass, armor.armorClass);
+                    }
+                }
+            });
+        }
+
+        return armorClass;
+    }
+
+    static getArmorClassModifier(body: BodyData): number {
+        let armorClassModifier = 0;
+
+        const equipment = body.equipment.find(value => value.type == "hand");
+        if (equipment) {
+            equipment.items.forEach(value => {
+                if (value.type == "shield") {
+                    let shield = <Shield>value;
+                    armorClassModifier = Math.min(armorClassModifier, shield.armorClassModifier);
+                }
+            });
+        }
+
+        return armorClassModifier;
+    }
+
     static equip(body: BodyData, item: Item): boolean {
         let equipped = false;
         let equipmentType: EquipmentType;
@@ -78,14 +121,17 @@ export class BodyController {
         }
 
         const equipment = body.equipment.find(value => value.type == equipmentType);
+        console.log(equipment, equipped);
         if (equipment) {
             const remainingSlots = equipment.items.reduce<number>((previous, current) => previous - (current.flags.indexOf("twohanded") > -1 ? 2 : 1), equipment.maximum);
             const isTwoHanded = item.flags.indexOf("twohanded") > -1;
+            console.log(remainingSlots, isTwoHanded);
             if ((isTwoHanded && remainingSlots >= 2) || (!isTwoHanded && remainingSlots > 0)) {
                 equipment.items.push(item);
                 equipped = true;
             }
         }
+        console.log(equipment, equipped);
 
         return equipped;
     }

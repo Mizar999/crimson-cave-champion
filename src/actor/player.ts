@@ -43,7 +43,7 @@ export class PlayerController extends ActorController {
     constructor(public player: Player) {
         super();
     }
-    
+
     async takeTurn(game: Game): Promise<Command> {
         this.command = undefined;
         await ServiceLocator.getInputUtility().waitForInput(this.handleInput.bind(this));
@@ -59,12 +59,17 @@ export class PlayerController extends ActorController {
     }
 
     getArmorClass(): number {
-        let armorClass = this.player.body.armorClass;
-        if (!armorClass) {
+        let armorClass = BodyController.getArmorClass(this.player.body);
+
+        if (armorClass === undefined) {
+            armorClass = this.player.body.armorClass;
+        }
+
+        if (armorClass === undefined) {
             armorClass = 9;
         }
 
-        return Math.min(9, armorClass - this.player.body.armorClassModifier - PlayerController.getAttributeModifier(this.player.dexterity));
+        return Math.min(9, armorClass + BodyController.getArmorClassModifier(this.player.body) - PlayerController.getAttributeModifier(this.player.dexterity));
     }
 
     describe(): string {

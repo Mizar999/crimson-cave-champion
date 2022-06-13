@@ -17,7 +17,9 @@ export class ActorManager {
     }
 
     static next(): ActorController {
-        return ActorManager.scheduler.next();
+        const actorController = ActorManager.scheduler.next();
+        console.log(actorController);
+        return actorController;
     }
 
     static getActor(filter: (actor: Actor) => boolean): Actor {
