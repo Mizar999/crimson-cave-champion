@@ -4,7 +4,7 @@ import { Entity } from "../ui/entity";
 
 export type ItemType = "weapon" | "armor" | "shield" | "ring" | "amulet" | "potion" | "scroll";
 
-export type Flag = "throwable" | "usable" | "twohanded" | "cursed";
+export type ItemFlag = "throwable" | "usable" | "twohanded" | "cursed";
 
 export type ModificationType = "life" | "strength" | "constitution" | "dexterity" | "wisdom" | "armorclass" | "speed";
 
@@ -24,23 +24,23 @@ export class StatValueModification {
 
 export class Item {
     // Use, throw, effect?
-    constructor(public type: ItemType, public name: string, public flags: Flag[] = []) { }
+    constructor(public type: ItemType, public name: string, public flags: ItemFlag[] = []) { }
 }
 
 export class Weapon extends Item {
-    constructor(name: string, public attacks: Attack[] = [], flags: Flag[] = [],) {
+    constructor(name: string, public attacks: Attack[] = [], flags: ItemFlag[] = [],) {
         super("weapon", name, flags);
     }
 }
 
 export class Armor extends Item {
-    constructor(name: string, public armorClass: number = undefined, flags: Flag[] = []) {
+    constructor(name: string, public armorClass: number = undefined, flags: ItemFlag[] = []) {
         super("armor", name, flags);
     }
 }
 
 export class Shield extends Item {
-    constructor(name: string, public armorClassModifier: number = 0, flags: Flag[] = []) {
+    constructor(name: string, public armorClassModifier: number = 0, flags: ItemFlag[] = []) {
         super("shield", name, flags);
     }
 }

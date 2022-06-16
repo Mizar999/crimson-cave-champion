@@ -21,7 +21,7 @@ export class ActorFactory {
             body: new BodyData({
                 equipment: Cloner.clone(HumanoidEquipment),
                 naturalAttacks: [{ weight: 1, attacks: [new Attack({ damage: { numberOf: 1, sides: 2 } })] }],
-                additionalAttacks: [new Attack({ damage: { numberOf: 1, sides: 8 }, isFrayDie: true })]
+                additionalAttacks: [new Attack({ damage: { numberOf: 1, sides: 8 }, flags: ["fraydie"] })]
             })
         });
 

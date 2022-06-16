@@ -1,13 +1,15 @@
 import { DiceValue } from "../util/dice";
 
+export type AttackFlag = "fraydie" | "alwayshits";
+
 export class Attack {
     damage: DiceValue;
     attackBonus: number;
-    isFrayDie: Boolean;
+    flags: AttackFlag[];
 
     constructor(params: Partial<Attack> = {}) {
         this.damage = params.damage || {numberOf: 0, sides: 1};
         this.attackBonus = params.attackBonus || 0;
-        this.isFrayDie = params.isFrayDie || false;
+        this.flags = params.flags || [];
     }
 }

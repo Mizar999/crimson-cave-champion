@@ -7,9 +7,9 @@ import { Attack } from "./attack";
 import { ServiceLocator } from "./service-locator";
 
 export class SystemManager {
-    private static attackDice: DiceValue = {numberOf: 1, sides: 20};
-    private static savingThrowDice: DiceValue = {numberOf: 2, sides: 8};
-    private static attributeDice: DiceValue = {numberOf: 4, sides: 6};
+    private static attackDice: DiceValue = { numberOf: 1, sides: 20 };
+    private static savingThrowDice: DiceValue = { numberOf: 2, sides: 8 };
+    private static attributeDice: DiceValue = { numberOf: 4, sides: 6 };
 
     static attack(attacker: Actor, target: Actor, attacks: Attack[]): void {
         let life: number;
@@ -40,8 +40,10 @@ export class SystemManager {
         attacks.forEach(attack => {
             let nextResult = { hit: false, diceResult: 0, attackRoll: 0, damage: 0 };
             let hit = false;
-            
-            if (attack.isFrayDie) {
+
+            if (attack.flags.indexOf("alwayshits") >= 0) {
+                hit = true;
+            } else if (attack.flags.indexOf("fraydie") >= 0) {
                 if (attacker.type === "player" && targetLevel) {
                     hit = (<Player>attacker).level >= targetLevel;
                 }
