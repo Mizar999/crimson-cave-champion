@@ -6,6 +6,22 @@ export type ItemType = "weapon" | "armor" | "shield" | "ring" | "amulet" | "poti
 
 export type Flag = "throwable" | "usable" | "twohanded" | "cursed";
 
+export type ModificationType = "life" | "strength" | "constitution" | "dexterity" | "wisdom" | "armorclass" | "speed";
+
+export class StatValueModification {
+    maxValueModification: number;
+    maxValueFactor: number;
+    currentValueModification: number;
+    currentValueFactor: number;
+
+    constructor(params: Partial<StatValueModification> = {}) {
+        this.maxValueModification = params.maxValueModification || 0;
+        this.maxValueFactor = params.maxValueFactor || 0;
+        this.currentValueModification = params.currentValueModification || 0;
+        this.currentValueFactor = params.currentValueFactor || 0;
+    }
+}
+
 export class Item {
     // Use, throw, effect?
     constructor(public type: ItemType, public name: string, public flags: Flag[] = []) { }
