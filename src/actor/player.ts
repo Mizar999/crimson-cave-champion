@@ -1,4 +1,4 @@
-import { Actor, ActorController } from "./actor";
+import { Actor, ActorController, StatValue, StatValueController } from "./actor";
 import { Visual } from "../ui/visual";
 import { BodyController, BodyData } from "../body/body-data";
 import { Command } from "../command/command";
@@ -10,29 +10,29 @@ import { ServiceLocator } from "../system/service-locator";
 import { Attack } from "../system/attack";
 
 export class Player extends Actor {
-    maxHitPoints: number;
+    maxHitPoints: StatValue;
     hitPoints: number;
     level: number;
     xp: number;
-    strength: number;
-    dexterity: number;
-    constitution: number;
-    wisdom: number;
-    attackBonus: number;
+    strength: StatValue;
+    dexterity: StatValue;
+    constitution: StatValue;
+    wisdom: StatValue;
+    attackBonus: StatValue;
     body: BodyData;
 
     constructor(params: Partial<Player> = {}) {
         super("player", (params.visual || new Visual("@", "white")), params.speed, params.point);
 
-        this.maxHitPoints = params.maxHitPoints || 1;
-        this.hitPoints = params.hitPoints || this.maxHitPoints;
+        this.maxHitPoints = params.maxHitPoints || new StatValue({ baseValue: 1 });
+        this.hitPoints = params.hitPoints || StatValueController.GetValue(this.maxHitPoints);
         this.level = params.level || 1;
         this.xp = params.xp || 0;
-        this.strength = params.strength || 0;
-        this.dexterity = params.dexterity || 0;
-        this.constitution = params.constitution || 0;
-        this.wisdom = params.wisdom || 0;
-        this.attackBonus = params.attackBonus || 0;
+        this.strength = params.strength || new StatValue({ baseValue: 0 });
+        this.dexterity = params.dexterity || new StatValue({ baseValue: 0 });
+        this.constitution = params.constitution || new StatValue({ baseValue: 0 });
+        this.wisdom = params.wisdom || new StatValue({ baseValue: 0 });
+        this.attackBonus = params.attackBonus || new StatValue({ baseValue: 0 });
         this.body = params.body || new BodyData();
     }
 }
@@ -76,18 +76,20 @@ export class PlayerController extends ActorController {
         return this.player.constructor.name;
     }
 
-    static getAttributeModifier(attribute: number): number {
-        if (attribute <= 3) {
+    static getAttributeModifier(attribute: StatValue): number {
+        const value = StatValueController.GetValue(attribute);
+
+        if (value <= 3) {
             return -3;
-        } else if (attribute <= 5) {
+        } else if (value <= 5) {
             return -2;
-        } else if (attribute <= 8) {
+        } else if (value <= 8) {
             return -1;
-        } else if (attribute >= 18) {
+        } else if (value >= 18) {
             return 3;
-        } else if (attribute >= 16) {
+        } else if (value >= 16) {
             return 2;
-        } else if (attribute >= 13) {
+        } else if (value >= 13) {
             return 1;
         }
 

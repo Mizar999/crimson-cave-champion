@@ -9,20 +9,20 @@ export type ActorType = "player" | "creature";
 export type SavingThrowType = "resist" | "dodge" | "dispel";
 
 export class StatValue {
-    baseMaxValue: number;
-    maxValueModification: number;
-    maxValueFactor: number;
-    baseCurrentValue: number;
-    currentValueModification: number;
-    currentValueFactor: number;
+    baseValue: number;
+    modification: number;
+    factor: number;
 
     constructor(params: Partial<StatValue> = {}) {
-        this.baseMaxValue = params.baseMaxValue || 0;
-        this.maxValueModification = params.maxValueModification || 0;
-        this.maxValueFactor = params.maxValueFactor || 0;
-        this.baseCurrentValue = params.baseCurrentValue || 0;
-        this.currentValueModification = params.currentValueModification || 0;
-        this.currentValueFactor = params.currentValueFactor || 0;
+        this.baseValue = params.baseValue || 0;
+        this.modification = params.modification || 0;
+        this.factor = params.factor || 1;
+    }
+}
+
+export class StatValueController {
+    static GetValue(value: StatValue) {
+        return (value.baseValue + value.modification) * value.factor;
     }
 }
 

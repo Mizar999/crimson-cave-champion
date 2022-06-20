@@ -1,5 +1,5 @@
 import { RNG } from "rot-js";
-import { Actor, ActorController, SavingThrowType } from "../actor/actor";
+import { Actor, ActorController, SavingThrowType, StatValue, StatValueController } from "../actor/actor";
 import { Creature, CreatureController } from "../actor/creature";
 import { Player, PlayerController } from "../actor/player";
 import { Dice, DiceResult, DiceValue } from "../util/dice";
@@ -25,7 +25,7 @@ export class SystemManager {
             case "creature":
                 let creature = <Creature>target;
                 life = creature.hitDice;
-                targetLevel = creature.maxHitDice;
+                targetLevel = StatValueController.GetValue(creature.maxHitDice);
                 targetController = new CreatureController(creature);
                 break;
         }
@@ -178,7 +178,7 @@ export class SystemManager {
             case "creature":
                 let creature = <Creature>target;
                 if (creature.savingThrows.indexOf(savingThrowType) > -1) {
-                    modifier += creature.skillBonus;
+                    modifier += StatValueController.GetValue(creature.skillBonus);
                 }
                 break;
         }
@@ -186,10 +186,10 @@ export class SystemManager {
         return (diceResult + modifier) >= difficulty;
     }
 
-    static getAttributes(quantity: number): number[] {
-        let result: number[];
+    static getAttributes(quantity: number): StatValue[] {
+        let result: StatValue[];
         let maxTries = 10;
-        let attribute: number;
+        let attribute: StatValue;
         let maxModifier: number;
 
         do {
@@ -198,23 +198,23 @@ export class SystemManager {
             --maxTries;
 
             for (let i = 0; i < quantity; ++i) {
-                attribute = this.resultWithoutLowest(Dice.roll(this.attributeDice));
+                attribute = new StatValue({ baseValue: this.resultWithoutLowest(Dice.roll(this.attributeDice)) });
                 maxModifier += PlayerController.getAttributeModifier(attribute);
                 result.push(attribute);
             }
         } while (maxTries > 0 && maxModifier < 0);
 
-        if (Math.max(...result) < 16) {
+        if (result.reduce((previous, current) => current.baseValue > previous.baseValue ? current : previous).baseValue < 16) {
             let indices: number[] = [];
-            let lowestValue = Math.min(...result);
+            let lowestValue = Math.min(result.reduce((previous, current) => current.baseValue < previous.baseValue ? current : previous).baseValue);
 
             result.forEach((value, index) => {
-                if (value == lowestValue) {
+                if (value.baseValue == lowestValue) {
                     indices.push(index);
                 }
             });
 
-            result[indices.sort(() => 0.5 - RNG.getUniform())[0]] = 16;
+            result[indices.sort(() => 0.5 - RNG.getUniform())[0]].baseValue = 16;
         }
 
         return result;
