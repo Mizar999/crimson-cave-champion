@@ -56,7 +56,7 @@ export class CreatureController extends ActorController {
     }
 
     getSpeed(): number {
-        return this.creature.speed;
+        return StatValueController.GetValue(this.creature.speed);
     }
 
     describe(): string {

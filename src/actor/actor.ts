@@ -27,7 +27,7 @@ export class StatValueController {
 }
 
 export abstract class Actor extends Entity {
-    constructor(public type: ActorType, public visual: Visual, public speed: number = ActorController.defaultSpeed, public point: Point = { x: 0, y: 0 }) {
+    constructor(public type: ActorType, public visual: Visual, public speed: StatValue = new StatValue({ baseValue: ActorController.defaultSpeed }), public point: Point = { x: 0, y: 0 }) {
         super(visual, "BlocksMovement");
     }
 }

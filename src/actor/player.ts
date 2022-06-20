@@ -55,7 +55,7 @@ export class PlayerController extends ActorController {
     }
 
     getSpeed(): number {
-        return this.player.speed;
+        return StatValueController.GetValue(this.player.speed);
     }
 
     getArmorClass(): number {
