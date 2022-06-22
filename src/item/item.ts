@@ -6,27 +6,13 @@ export type ItemType = "weapon" | "armor" | "shield" | "ring" | "amulet" | "poti
 
 export type ItemFlag = "throwable" | "usable" | "twohanded" | "cursed";
 
-export type ModificationType = "maxlife" | "life" | "strength" | "constitution" | "dexterity" | "wisdom" | "armorclass" | "speed" | "atackbonus";
-
-export class StatValueModification {
-    type: ModificationType;
-    valueModification: number;
-    factorModification: number;
-
-    constructor(params: Partial<StatValueModification> = {}) {
-        this.type = params.type;
-        this.valueModification = params.valueModification || 0;
-        this.factorModification = params.factorModification || 0;
-    }
-}
-
 export class Item {
     // Use, throw, effect?
     constructor(public type: ItemType, public name: string, public flags: ItemFlag[] = []) { }
 }
 
 export class Weapon extends Item {
-    constructor(name: string, public attacks: Attack[] = [], flags: ItemFlag[] = [],) {
+    constructor(name: string, public attacks: Attack[] = [], public inflicts: Effect[] = [], flags: ItemFlag[] = [],) {
         super("weapon", name, flags);
     }
 }
