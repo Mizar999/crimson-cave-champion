@@ -55,6 +55,10 @@ export class CreatureController extends ActorController {
         return (armorClass || 0) + BodyController.getArmorClassModifier(this.creature.body) + this.creature.body.armorClassModifier;
     }
 
+    reapplyModifications() {
+        // TODO
+    }
+
     getSpeed(): number {
         return StatValueController.GetValue(this.creature.speed);
     }

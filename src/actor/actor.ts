@@ -49,5 +49,7 @@ export abstract class ActorController {
 
     abstract getArmorClass(): number;
 
+    abstract reapplyModifications();
+
     abstract describe(): string;
 }

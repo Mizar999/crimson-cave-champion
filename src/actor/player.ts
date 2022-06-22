@@ -8,6 +8,7 @@ import { DebugLogCommand } from "../command/debug-log-command";
 import { AttackCommand } from "../command/attack-command";
 import { ServiceLocator } from "../system/service-locator";
 import { Attack } from "../system/attack";
+import { ItemController } from "../item/item";
 
 export class Player extends Actor {
     maxHitPoints: StatValue;
@@ -70,6 +71,16 @@ export class PlayerController extends ActorController {
         }
 
         return Math.min(9, armorClass + BodyController.getArmorClassModifier(this.player.body) - PlayerController.getAttributeModifier(this.player.dexterity));
+    }
+
+    reapplyModifications() {
+        // TODO
+        // Reset stats first
+        ItemController.getEquipmentModifications(this.player.body.equipment).forEach(modification => {
+            switch(modification.type) {
+
+            }
+        });
     }
 
     describe(): string {
