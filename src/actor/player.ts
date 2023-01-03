@@ -75,12 +75,60 @@ export class PlayerController extends ActorController {
 
     reapplyModifications() {
         // TODO
-        // Reset stats first
+        this.resetModifications();
         ItemController.getEquipmentModifications(this.player.body.equipment).forEach(modification => {
-            switch(modification.type) {
-
+            switch (modification.type) {
+                case "maxlife":
+                    this.player.maxHitPoints.modification += modification.valueModification;
+                    this.player.maxHitPoints.factor += modification.factorModification;
+                    break;
+                case "strength":
+                    this.player.strength.modification += modification.valueModification;
+                    this.player.strength.factor += modification.factorModification;
+                    break;
+                case "constitution":
+                    this.player.constitution.modification += modification.valueModification;
+                    this.player.constitution.factor += modification.factorModification;
+                    break;
+                case "dexterity":
+                    this.player.dexterity.modification += modification.valueModification;
+                    this.player.dexterity.factor += modification.factorModification;
+                    break;
+                case "wisdom":
+                    this.player.wisdom.modification += modification.valueModification;
+                    this.player.wisdom.factor += modification.factorModification;
+                    break;
+                // case "armorclass": // TODO
+                //     this.player.maxHitPoints.modification += modification.valueModification;
+                //     this.player.maxHitPoints.factor += modification.factorModification;
+                //     break;
+                case "speed":
+                    this.player.speed.modification += modification.valueModification;
+                    this.player.speed.factor += modification.factorModification;
+                    break;
+                case "attackbonus":
+                    this.player.attackBonus.modification += modification.valueModification;
+                    this.player.attackBonus.factor += modification.factorModification;
+                    break;
             }
         });
+    }
+
+    resetModifications() {
+        this.player.maxHitPoints.modification = 0;
+        this.player.maxHitPoints.factor = 1;
+        this.player.strength.modification = 0;
+        this.player.strength.factor = 1;
+        this.player.dexterity.modification = 0;
+        this.player.dexterity.factor = 1;
+        this.player.constitution.modification = 0;
+        this.player.constitution.factor = 1;
+        this.player.wisdom.modification = 0;
+        this.player.wisdom.factor = 1;
+        this.player.attackBonus.modification = 0;
+        this.player.attackBonus.factor = 1;
+        this.player.speed.modification = 0;
+        this.player.speed.factor = 1;
     }
 
     describe(): string {

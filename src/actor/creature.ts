@@ -59,6 +59,10 @@ export class CreatureController extends ActorController {
         // TODO
     }
 
+    resetModifications() {
+        // TODO
+    }
+
     getSpeed(): number {
         return StatValueController.GetValue(this.creature.speed);
     }

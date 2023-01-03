@@ -51,5 +51,7 @@ export abstract class ActorController {
 
     abstract reapplyModifications();
 
+    abstract resetModifications();
+
     abstract describe(): string;
 }

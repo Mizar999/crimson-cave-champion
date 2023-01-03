@@ -1,4 +1,4 @@
-export type ModificationType = "maxlife" | "life" | "strength" | "constitution" | "dexterity" | "wisdom" | "armorclass" | "speed" | "atackbonus";
+export type ModificationType = "maxlife" | "strength" | "constitution" | "dexterity" | "wisdom" | "armorclass" | "speed" | "attackbonus";
 
 export class StatValueModification {
     type: ModificationType;
@@ -6,7 +6,7 @@ export class StatValueModification {
     factorModification: number;
 
     constructor(params: Partial<StatValueModification> = {}) {
-        this.type = params.type || "life";
+        this.type = params.type || "maxlife";
         this.valueModification = params.valueModification || 0;
         this.factorModification = params.factorModification || 0;
     }
