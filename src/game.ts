@@ -1,16 +1,18 @@
 import { ServiceLocator } from "./system/service-locator";
 import { MessageLog } from "./ui/message-log";
 import { InputUtility } from "./util/input-utility";
-import { Dice, DiceResult, DiceValue } from "./util/dice";
+import { Dice } from "./util/dice";
+import { Actor } from "./data/actor";
+import { Weapon } from "./data/weapon";
 import { RNG } from "rot-js";
+import { Factory } from "./data/factory";
 
 export class Game {
     private exitGame: boolean;
     private player: Actor;
-    private enemies: Actor[];
     private currentEnemy: Actor;
-    private enemyIndex: number;
-    private weapons: Weapon[];
+    private enemies: string[];
+    private weapons: string[];
 
     constructor() {
         this.initialize();
@@ -18,27 +20,20 @@ export class Game {
     }
 
     private initialize(): void {
-        let maxMessages = 15;
+        let maxMessages = 25;
         ServiceLocator.provideMessageLog(new MessageLog(document.getElementById("messages"), maxMessages));
         ServiceLocator.getMessageLog().addMessages(...Array(maxMessages).fill("&nbsp;"));
         ServiceLocator.provideInputUtility(new InputUtility());
+        ServiceLocator.provideFactory(new Factory());
+        ServiceLocator.getFactory().initialize();
 
-        this.weapons = [
-            new Weapon(),
-            new Weapon({ name: "Dagger", attack: { numberOf: 1, sides: 4 }, armorPenetration: { damage: 1, targetArmorClass: 15 } }),
-            new Weapon({ name: "Mace", attack: { numberOf: 1, sides: 6 }, armorPenetration: { damage: 1, targetArmorClass: 18 } }),
-            new Weapon({ name: "Shortsword", attack: { numberOf: 1, sides: 6 }, armorPenetration: { damage: 2, targetArmorClass: 15 } }),
-            new Weapon({ name: "Club", attack: { numberOf: 1, sides: 4 } }),
-            new Weapon({ name: "Warhammer", attack: { numberOf: 1, sides: 8 }, armorPenetration: { damage: 1, targetArmorClass: 18 } }),
-        ];
+        this.weapons = ["", "Dagger", "Mace", "Shortsword", "Club", "Warhammer"];
+        this.enemies = ["Human"];
 
-        let playerWeapon = new Weapon(this.weapons[RNG.getUniformInt(0, this.weapons.length)]);
-        this.player = new Actor({ name: "Player", hitPoints: 15, armorClass: 12, attack: playerWeapon.attack, armorPenetration: playerWeapon.armorPenetration, overpowerDamage: {numberOf: 1, sides: 4} });
+        let playerWeapon = this.getRandomWeapon();
+        this.player = ServiceLocator.getFactory().createActor("Player");
         ServiceLocator.getMessageLog().addMessages(`${this.player.name} found ${playerWeapon.describe()}`);
 
-        this.enemies = [
-            new Actor({ name: "Human", hitPoints: 8, armorClass: 10 })
-        ];
         this.nextEnemy();
     }
 
@@ -102,16 +97,14 @@ export class Game {
 
         let message: string;
         if (damage) {
-            damage += overpowerDamage;
-            defender.hitPoints -= damage;
+            defender.hitPoints -= (damage + overpowerDamage);
             message = `${attacker.name} hit ${defender.name} for ${damage}`;
             if (overpowerDamage > 0) {
                 message += " + " + overpowerDamage;
             }
             message += " damage";
         } else if (armorPenetrationDamage) {
-            armorPenetrationDamage += overpowerDamage;
-            defender.hitPoints -= armorPenetrationDamage;
+            defender.hitPoints -= (armorPenetrationDamage + overpowerDamage);
             message = `${attacker.name} hit ${defender.name}'s armor for ${armorPenetrationDamage}`;
             if (overpowerDamage > 0) {
                 message += " + " + overpowerDamage;
@@ -119,77 +112,26 @@ export class Game {
             message += " damage";
         } else if (overpowerDamage) {
             defender.hitPoints -= overpowerDamage;
-            message = `${attacker.name} missed ${defender.name} but deals ${overpowerDamage} damage anyway`;
+            message = `${attacker.name} hit ${defender.name} for ${overpowerDamage} overpower damage`;
         } else {
             message = `${attacker.name} missed ${defender.name} (${attackRoll.result} vs ${defender.armorClass})`;
         }
         ServiceLocator.getMessageLog().addMessages(message);
     }
 
+    private getRandomEnemy(): Actor {
+        return ServiceLocator.getFactory().createActor(RNG.getItem<string>(this.enemies));
+    }
+
+    private getRandomWeapon(): Weapon {
+        return ServiceLocator.getFactory().createWeapon(RNG.getItem<string>(this.weapons));
+    }
+
     private nextEnemy(): void {
-        if (this.enemyIndex === undefined) {
-            this.enemyIndex = 0;
-        } else {
-            this.enemyIndex++;
-            if (this.enemyIndex >= this.enemies.length) {
-                this.enemyIndex = 0;
-            }
-        }
-        this.currentEnemy = new Actor(this.enemies[this.enemyIndex]);
-        let weapon = new Weapon(this.weapons[RNG.getUniformInt(0, this.weapons.length)]);
+        this.currentEnemy = this.getRandomEnemy();
+        let weapon = this.getRandomWeapon();
         this.currentEnemy.attack = weapon.attack;
         this.currentEnemy.armorPenetration = weapon.armorPenetration;
         ServiceLocator.getMessageLog().addMessages(`Enemy ${this.currentEnemy.name} with ${weapon.describe()} appeared!`);
-    }
-}
-
-// TODO add speed to implement turn order and multiple attacks per round
-class Actor {
-    name: string;
-    hitPoints: number;
-    level: number;
-    armorClass: number;
-    attackBonus: number;
-    damageBonus: number;
-    overpowerDamage: DiceValue;
-    attack: DiceValue;
-    armorPenetration: ArmorPeneration;
-
-    constructor(params: Partial<Actor> = {}) {
-        this.name = params.name || "Unknown actor";
-        this.hitPoints = params.hitPoints || 1;
-        this.level = params.level || 1;
-        this.armorClass = params.armorClass || 0;
-        this.attackBonus = params.attackBonus || 0;
-        this.damageBonus = params.damageBonus || 0;
-        this.overpowerDamage = params.overpowerDamage || null;
-        this.attack = params.attack || new Weapon().attack;
-        this.armorPenetration = params.armorPenetration || null;
-    }
-}
-
-class ArmorPeneration {
-    targetArmorClass: number;
-    damage: number;
-}
-
-class Weapon {
-    name: string;
-    attack: DiceValue;
-    armorPenetration: ArmorPeneration;
-
-    constructor(params: Partial<Weapon> = {}) {
-        this.name = params.name || "No Weapon";
-        this.attack = params.attack || { numberOf: 1, sides: 2 };
-        this.armorPenetration = params.armorPenetration || null;
-    }
-
-    describe(): string {
-        let description = `a ${this.name} (${this.attack.numberOf}d${this.attack.sides}`;
-        if (this.armorPenetration) {
-            description += `; ${this.armorPenetration.damage}/AC ${this.armorPenetration.targetArmorClass}`;
-        }
-        description += ")";
-        return description;
     }
 }
