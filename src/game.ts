@@ -25,15 +25,15 @@ export class Game {
 
         this.weapons = [
             new Weapon(),
-            new Weapon({ name: "Dagger", attack: { numberOf: 1, sides: 4 }, shock: { damage: 1, targetArmorClass: 15 } }),
-            new Weapon({ name: "Mace", attack: { numberOf: 1, sides: 6 }, shock: { damage: 1, targetArmorClass: 18 } }),
-            new Weapon({ name: "Shortsword", attack: { numberOf: 1, sides: 6 }, shock: { damage: 2, targetArmorClass: 15 } }),
+            new Weapon({ name: "Dagger", attack: { numberOf: 1, sides: 4 }, armorPenetration: { damage: 1, targetArmorClass: 15 } }),
+            new Weapon({ name: "Mace", attack: { numberOf: 1, sides: 6 }, armorPenetration: { damage: 1, targetArmorClass: 18 } }),
+            new Weapon({ name: "Shortsword", attack: { numberOf: 1, sides: 6 }, armorPenetration: { damage: 2, targetArmorClass: 15 } }),
             new Weapon({ name: "Club", attack: { numberOf: 1, sides: 4 } }),
-            new Weapon({ name: "Warhammer", attack: { numberOf: 1, sides: 8 }, shock: { damage: 1, targetArmorClass: 18 } }),
+            new Weapon({ name: "Warhammer", attack: { numberOf: 1, sides: 8 }, armorPenetration: { damage: 1, targetArmorClass: 18 } }),
         ];
 
         let playerWeapon = new Weapon(this.weapons[RNG.getUniformInt(0, this.weapons.length)]);
-        this.player = new Actor({ name: "Player", hitPoints: 15, armorClass: 18, attacks: [playerWeapon.attack], shock: playerWeapon.shock });
+        this.player = new Actor({ name: "Player", hitPoints: 15, armorClass: 12, attack: playerWeapon.attack, armorPenetration: playerWeapon.armorPenetration, overpowerDamage: {numberOf: 1, sides: 4} });
         ServiceLocator.getMessageLog().addMessages(`${this.player.name} found ${playerWeapon.describe()}`);
 
         this.enemies = [
@@ -75,7 +75,8 @@ export class Game {
     private attack(attacker: Actor, defender: Actor): void {
         let hit = false;
         let damage = 0;
-        let shockDamage = 0;
+        let armorPenetrationDamage = 0;
+        let overpowerDamage = 0;
         let attackRoll = Dice.roll({ numberOf: 1, sides: 20, modifier: attacker.attackBonus });
         if (attackRoll.dice[0] === 20) {
             hit = true;
@@ -84,26 +85,45 @@ export class Game {
         }
 
         if (hit) {
-            damage = attacker.attacks.reduce((previous, current) => previous + Dice.roll(current).result, 0) + attacker.damageBonus;
+            damage = Dice.roll(attacker.attack).result + attacker.damageBonus;
         }
 
-        if (attacker.shock) {
-            if (hit && damage < attacker.shock.damage) {
-                damage = attacker.shock.damage;
-            } else if (attacker.shock.targetArmorClass <= 0 || defender.armorClass <= attacker.shock.targetArmorClass) {
-                shockDamage = attacker.shock.damage;
+        if (attacker.armorPenetration && (attacker.armorPenetration.targetArmorClass <= 0 || defender.armorClass <= attacker.armorPenetration.targetArmorClass)) {
+            if (hit && damage < attacker.armorPenetration.damage) {
+                damage = attacker.armorPenetration.damage;
+            } else {
+                armorPenetrationDamage = attacker.armorPenetration.damage + attacker.damageBonus;
             }
         }
 
-        if (damage) {
-            defender.hitPoints -= damage;
-            ServiceLocator.getMessageLog().addMessages(`${attacker.name} hit ${defender.name} for ${damage} damage`);
-        } else if (shockDamage) {
-            defender.hitPoints -= shockDamage;
-            ServiceLocator.getMessageLog().addMessages(`${attacker.name} hit ${defender.name}'s armor for ${shockDamage} damage`);
-        } else {
-            ServiceLocator.getMessageLog().addMessages(`${attacker.name} missed ${defender.name} (${attackRoll.result} vs ${defender.armorClass})`);
+        if (attacker.overpowerDamage && defender.level <= attacker.level) {
+            overpowerDamage = Dice.roll(attacker.overpowerDamage).result;
         }
+
+        let message: string;
+        if (damage) {
+            damage += overpowerDamage;
+            defender.hitPoints -= damage;
+            message = `${attacker.name} hit ${defender.name} for ${damage}`;
+            if (overpowerDamage > 0) {
+                message += " + " + overpowerDamage;
+            }
+            message += " damage";
+        } else if (armorPenetrationDamage) {
+            armorPenetrationDamage += overpowerDamage;
+            defender.hitPoints -= armorPenetrationDamage;
+            message = `${attacker.name} hit ${defender.name}'s armor for ${armorPenetrationDamage}`;
+            if (overpowerDamage > 0) {
+                message += " + " + overpowerDamage;
+            }
+            message += " damage";
+        } else if (overpowerDamage) {
+            defender.hitPoints -= overpowerDamage;
+            message = `${attacker.name} missed ${defender.name} but deals ${overpowerDamage} damage anyway`;
+        } else {
+            message = `${attacker.name} missed ${defender.name} (${attackRoll.result} vs ${defender.armorClass})`;
+        }
+        ServiceLocator.getMessageLog().addMessages(message);
     }
 
     private nextEnemy(): void {
@@ -117,35 +137,38 @@ export class Game {
         }
         this.currentEnemy = new Actor(this.enemies[this.enemyIndex]);
         let weapon = new Weapon(this.weapons[RNG.getUniformInt(0, this.weapons.length)]);
-        this.currentEnemy.attacks = [weapon.attack];
-        this.currentEnemy.shock = weapon.shock;
+        this.currentEnemy.attack = weapon.attack;
+        this.currentEnemy.armorPenetration = weapon.armorPenetration;
         ServiceLocator.getMessageLog().addMessages(`Enemy ${this.currentEnemy.name} with ${weapon.describe()} appeared!`);
     }
 }
 
-// TODO implement player level and enemy hit dice
-// TODO implement fray damage: only applies if enemies hit dice are less or equal than player level
+// TODO add speed to implement turn order and multiple attacks per round
 class Actor {
     name: string;
     hitPoints: number;
+    level: number;
     armorClass: number;
     attackBonus: number;
     damageBonus: number;
-    attacks: DiceValue[];
-    shock: Shock;
+    overpowerDamage: DiceValue;
+    attack: DiceValue;
+    armorPenetration: ArmorPeneration;
 
     constructor(params: Partial<Actor> = {}) {
         this.name = params.name || "Unknown actor";
         this.hitPoints = params.hitPoints || 1;
+        this.level = params.level || 1;
         this.armorClass = params.armorClass || 0;
         this.attackBonus = params.attackBonus || 0;
         this.damageBonus = params.damageBonus || 0;
-        this.attacks = params.attacks || [new Weapon().attack];
-        this.shock = params.shock || null;
+        this.overpowerDamage = params.overpowerDamage || null;
+        this.attack = params.attack || new Weapon().attack;
+        this.armorPenetration = params.armorPenetration || null;
     }
 }
 
-class Shock {
+class ArmorPeneration {
     targetArmorClass: number;
     damage: number;
 }
@@ -153,18 +176,18 @@ class Shock {
 class Weapon {
     name: string;
     attack: DiceValue;
-    shock: Shock;
+    armorPenetration: ArmorPeneration;
 
     constructor(params: Partial<Weapon> = {}) {
         this.name = params.name || "No Weapon";
         this.attack = params.attack || { numberOf: 1, sides: 2 };
-        this.shock = params.shock || null;
+        this.armorPenetration = params.armorPenetration || null;
     }
 
     describe(): string {
         let description = `a ${this.name} (${this.attack.numberOf}d${this.attack.sides}`;
-        if (this.shock) {
-            description += `; ${this.shock.damage}/AC ${this.shock.targetArmorClass}`;
+        if (this.armorPenetration) {
+            description += `; ${this.armorPenetration.damage}/AC ${this.armorPenetration.targetArmorClass}`;
         }
         description += ")";
         return description;
