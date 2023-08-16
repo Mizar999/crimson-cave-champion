@@ -1,5 +1,5 @@
 import { Actor } from "./actor";
-import { Weapon } from "./weapon";
+import { Weapon } from './weapon';
 
 export class Factory {
     private actors: Actor[];
@@ -22,18 +22,14 @@ export class Factory {
     }
 
     createActor(name: string): Actor {
-        let actor = this.actors.find(value => value.name === name);
-        if (actor !== undefined) {
-            return new Actor(actor);
-        }
-        return new Actor();
+        return new Actor(this.createType<Actor>(this.actors, (actor) => actor.name === name));
     }
 
     createWeapon(name: string): Weapon {
-        let weapon = this.weapons.find(value => value.name === name);
-        if (weapon !== undefined) {
-            return new Weapon(weapon);
-        }
-        return new Weapon();
+        return new Weapon(this.createType<Weapon>(this.weapons, (weapon) => weapon.name === name));
+    }
+
+    private createType<T extends Actor | Weapon>(data: Array<T>, predicate: (value: T) => boolean): T {
+        return data.find(predicate);
     }
 }

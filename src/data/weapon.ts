@@ -7,7 +7,7 @@ export class Weapon {
     armorPenetration: ArmorPeneration;
 
     constructor(params: Partial<Weapon> = {}) {
-        this.name = params.name || "No Weapon";
+        this.name = params.name || "Unarmed";
         this.attack = params.attack || { numberOf: 1, sides: 2 };
         this.armorPenetration = params.armorPenetration || null;
     }

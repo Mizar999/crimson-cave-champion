@@ -27,11 +27,13 @@ export class Game {
         ServiceLocator.provideFactory(new Factory());
         ServiceLocator.getFactory().initialize();
 
-        this.weapons = ["", "Dagger", "Mace", "Shortsword", "Club", "Warhammer"];
+        this.weapons = ["Unarmed", "Dagger", "Mace", "Shortsword", "Club", "Warhammer"];
         this.enemies = ["Human"];
 
         let playerWeapon = this.getRandomWeapon();
         this.player = ServiceLocator.getFactory().createActor("Player");
+        this.player.attack = playerWeapon.attack;
+        this.player.armorPenetration = playerWeapon.armorPenetration;
         ServiceLocator.getMessageLog().addMessages(`${this.player.name} found ${playerWeapon.describe()}`);
 
         this.nextEnemy();
@@ -78,7 +80,7 @@ export class Game {
         } else if (attackRoll.dice[0] !== 1) {
             hit = attackRoll.result >= defender.armorClass;
         }
-
+        
         if (hit) {
             damage = Dice.roll(attacker.attack).result + attacker.damageBonus;
         }
